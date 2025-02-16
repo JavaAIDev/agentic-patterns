@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: agentic-patterns
+  threads.virtual.enabled: true
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG
