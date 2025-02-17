@@ -1,6 +1,8 @@
 package com.javaaidev.agenticpatterns.evaluatoroptimizer;
 
+import com.javaaidev.agenticpatterns.core.TypeResolver;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
@@ -8,6 +10,15 @@ import org.springframework.ai.chat.client.ChatClient;
 
 public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> extends
     EvaluatorOptimizerAgent<Request, Response> {
+
+  @Nullable
+  protected Type responseType = null;
+
+  private void tryResolveType() {
+    responseType = TypeResolver.resolveType(this.getClass(),
+        PromptBasedEvaluatorOptimizerAgent.class,
+        1);
+  }
 
   protected abstract ChatClient getGenerationChatClient();
 
@@ -20,24 +31,32 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     return new HashMap<>();
   }
 
+  public class GenerateInitialResultAgent extends TaskExecutionAgent<Request, Response> {
+
+    public GenerateInitialResultAgent(Type responseType) {
+      super(responseType);
+    }
+
+    @Override
+    protected String getPromptTemplate() {
+      return getInitialResultPromptTemplate();
+    }
+
+    @Override
+    protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
+      return buildInitialResultPromptContext(request);
+    }
+
+    @Override
+    protected ChatClient getChatClient() {
+      return getGenerationChatClient();
+    }
+  }
+
   @Override
   protected TaskExecutionAgent<Request, Response> buildInitialResultAgent() {
-    return new TaskExecutionAgent<>() {
-      @Override
-      protected String getPromptTemplate() {
-        return getInitialResultPromptTemplate();
-      }
-
-      @Override
-      protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
-        return buildInitialResultPromptContext(request);
-      }
-
-      @Override
-      protected ChatClient getChatClient() {
-        return getGenerationChatClient();
-      }
-    };
+    tryResolveType();
+    return new GenerateInitialResultAgent(responseType);
   }
 
   protected abstract String getEvaluationPromptTemplate();
@@ -47,24 +66,27 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     return new HashMap<>();
   }
 
+  public class EvaluateAgent extends TaskExecutionAgent<Response, Evaluation> {
+
+    @Override
+    protected String getPromptTemplate() {
+      return getEvaluationPromptTemplate();
+    }
+
+    @Override
+    protected @Nullable Map<String, Object> getPromptContext(@Nullable Response response) {
+      return buildEvaluationPromptContext(response);
+    }
+
+    @Override
+    protected ChatClient getChatClient() {
+      return getEvaluationChatClient();
+    }
+  }
+
   @Override
   protected TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent() {
-    return new TaskExecutionAgent<>() {
-      @Override
-      protected String getPromptTemplate() {
-        return getEvaluationPromptTemplate();
-      }
-
-      @Override
-      protected @Nullable Map<String, Object> getPromptContext(@Nullable Response response) {
-        return buildEvaluationPromptContext(response);
-      }
-
-      @Override
-      protected ChatClient getChatClient() {
-        return getEvaluationChatClient();
-      }
-    };
+    return new EvaluateAgent();
   }
 
   protected abstract String getOptimizationPromptTemplate();
@@ -74,24 +96,32 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     return new HashMap<>();
   }
 
+  public class OptimizeAgent extends TaskExecutionAgent<OptimizationInput<Response>, Response> {
+
+    public OptimizeAgent(Type responseType) {
+      super(responseType);
+    }
+
+    @Override
+    protected String getPromptTemplate() {
+      return getOptimizationPromptTemplate();
+    }
+
+    @Override
+    protected @Nullable Map<String, Object> getPromptContext(
+        @Nullable OptimizationInput<Response> responseOptimizationInput) {
+      return buildOptimizationPromptContext(responseOptimizationInput);
+    }
+
+    @Override
+    protected ChatClient getChatClient() {
+      return getGenerationChatClient();
+    }
+  }
+
   @Override
   protected TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent() {
-    return new TaskExecutionAgent<>() {
-      @Override
-      protected String getPromptTemplate() {
-        return getOptimizationPromptTemplate();
-      }
-
-      @Override
-      protected @Nullable Map<String, Object> getPromptContext(
-          @Nullable OptimizationInput<Response> responseOptimizationInput) {
-        return buildOptimizationPromptContext(responseOptimizationInput);
-      }
-
-      @Override
-      protected ChatClient getChatClient() {
-        return getGenerationChatClient();
-      }
-    };
+    tryResolveType();
+    return new OptimizeAgent(responseType);
   }
 }

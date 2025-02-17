@@ -2,20 +2,30 @@ package com.javaaidev.agenticpatterns.taskexecution;
 
 import com.javaaidev.agenticpatterns.core.Agent;
 import com.javaaidev.agenticpatterns.core.AgentExecutionException;
+import com.javaaidev.agenticpatterns.core.TypeResolver;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.ResolvableType;
 
 public abstract class TaskExecutionAgent<Request, Response> extends Agent {
 
   protected abstract String getPromptTemplate();
+
+  @Nullable
+  protected final Type responseType;
+
+  protected TaskExecutionAgent() {
+    responseType = TypeResolver.resolveType(this.getClass(), TaskExecutionAgent.class, 1);
+  }
+
+  protected TaskExecutionAgent(@Nullable Type responseType) {
+    this.responseType = responseType;
+  }
 
   @Nullable
   protected Map<String, Object> getPromptContext(@Nullable Request request) {
@@ -30,7 +40,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
     if (template.isBlank()) {
       throw new AgentExecutionException("Blank prompt template");
     }
-    var type = getResponseType();
+    var type = responseType != null ? responseType : Object.class;
     var context = Optional.ofNullable(getPromptContext(request)).map(HashMap::new).orElseGet(
         HashMap::new);
     var requestSpec = getChatClient().prompt().user(userSpec -> userSpec.text(template)
@@ -51,17 +61,4 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
     return output;
   }
 
-  private Type getResponseType() {
-    var agentType = ResolvableType.forClass(this.getClass()).as(TaskExecutionAgent.class);
-    var types = agentType.getGenerics();
-    if (types.length < 2) {
-      throw new AgentExecutionException("Wrong type");
-    }
-    var type = types[1].getType();
-    if (type instanceof TypeVariable<?> typeVariable) {
-      var bounds = typeVariable.getBounds();
-      return bounds.length > 0 ? bounds[0] : Object.class;
-    }
-    return type;
-  }
 }
