@@ -5,6 +5,10 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @param <Request>
+ * @param <Response>
+ */
 public abstract class EvaluatorOptimizerAgent<Request, Response> {
 
   protected TaskExecutionAgent<Request, Response> initialResultAgent = buildInitialResultAgent();

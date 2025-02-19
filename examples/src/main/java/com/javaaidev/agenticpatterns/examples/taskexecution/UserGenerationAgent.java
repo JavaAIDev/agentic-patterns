@@ -11,10 +11,8 @@ import org.springframework.ai.chat.client.ChatClient;
 
 public class UserGenerationAgent extends TaskExecutionAgent<UserGenerationRequest, List<User>> {
 
-  private final ChatClient chatClient;
-
   public UserGenerationAgent(ChatClient chatClient) {
-    this.chatClient = chatClient;
+    super(chatClient);
   }
 
   @Override
@@ -30,11 +28,6 @@ public class UserGenerationAgent extends TaskExecutionAgent<UserGenerationReques
     return Map.of(
         "count", Math.max(1, count)
     );
-  }
-
-  @Override
-  protected ChatClient getChatClient() {
-    return chatClient;
   }
 
   public record UserGenerationRequest(int count) {

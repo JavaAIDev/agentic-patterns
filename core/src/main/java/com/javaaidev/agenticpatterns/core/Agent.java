@@ -4,5 +4,9 @@ import org.springframework.ai.chat.client.ChatClient;
 
 public abstract class Agent {
 
-  protected abstract ChatClient getChatClient();
+  protected final ChatClient chatClient;
+
+  protected Agent(ChatClient chatClient) {
+    this.chatClient = chatClient;
+  }
 }

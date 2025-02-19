@@ -33,8 +33,8 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
   public class GenerateInitialResultAgent extends TaskExecutionAgent<Request, Response> {
 
-    public GenerateInitialResultAgent(Type responseType) {
-      super(responseType);
+    public GenerateInitialResultAgent(@Nullable Type responseType) {
+      super(getGenerationChatClient(), responseType);
     }
 
     @Override
@@ -45,11 +45,6 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     @Override
     protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
       return buildInitialResultPromptContext(request);
-    }
-
-    @Override
-    protected ChatClient getChatClient() {
-      return getGenerationChatClient();
     }
   }
 
@@ -68,6 +63,11 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
   public class EvaluateAgent extends TaskExecutionAgent<Response, Evaluation> {
 
+
+    protected EvaluateAgent() {
+      super(getEvaluationChatClient());
+    }
+
     @Override
     protected String getPromptTemplate() {
       return getEvaluationPromptTemplate();
@@ -76,11 +76,6 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     @Override
     protected @Nullable Map<String, Object> getPromptContext(@Nullable Response response) {
       return buildEvaluationPromptContext(response);
-    }
-
-    @Override
-    protected ChatClient getChatClient() {
-      return getEvaluationChatClient();
     }
   }
 
@@ -98,8 +93,8 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
   public class OptimizeAgent extends TaskExecutionAgent<OptimizationInput<Response>, Response> {
 
-    public OptimizeAgent(Type responseType) {
-      super(responseType);
+    public OptimizeAgent(@Nullable Type responseType) {
+      super(getGenerationChatClient(), responseType);
     }
 
     @Override
@@ -111,11 +106,6 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     protected @Nullable Map<String, Object> getPromptContext(
         @Nullable OptimizationInput<Response> responseOptimizationInput) {
       return buildOptimizationPromptContext(responseOptimizationInput);
-    }
-
-    @Override
-    protected ChatClient getChatClient() {
-      return getGenerationChatClient();
     }
   }
 

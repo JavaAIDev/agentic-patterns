@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.core.ParameterizedTypeReference;
 
@@ -31,11 +32,13 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
   @Nullable
   protected final Type responseType;
 
-  protected TaskExecutionAgent() {
+  protected TaskExecutionAgent(ChatClient chatClient) {
+    super(chatClient);
     responseType = TypeResolver.resolveType(this.getClass(), TaskExecutionAgent.class, 1);
   }
 
-  protected TaskExecutionAgent(@Nullable Type responseType) {
+  protected TaskExecutionAgent(ChatClient chatClient, @Nullable Type responseType) {
+    super(chatClient);
     this.responseType = responseType;
   }
 
@@ -50,6 +53,11 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
     return new HashMap<>();
   }
 
+  /**
+   * Customize request sent to LLM
+   *
+   * @param spec {@linkplain ChatClientRequestSpec} from Spring AI
+   */
   protected void updateRequest(ChatClientRequestSpec spec) {
   }
 
@@ -61,7 +69,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
     var type = responseType != null ? responseType : Object.class;
     var context = Optional.ofNullable(getPromptContext(request)).map(HashMap::new).orElseGet(
         HashMap::new);
-    var requestSpec = getChatClient().prompt().user(userSpec -> userSpec.text(template)
+    var requestSpec = chatClient.prompt().user(userSpec -> userSpec.text(template)
         .params(context));
     updateRequest(requestSpec);
     var responseSpec = requestSpec.call();

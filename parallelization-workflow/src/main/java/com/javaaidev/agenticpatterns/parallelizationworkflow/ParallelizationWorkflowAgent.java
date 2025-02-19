@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
 
 public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {
@@ -69,11 +70,12 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     }
   }
 
-  public ParallelizationWorkflowAgent(@Nullable Type responseType) {
-    super(responseType);
+  public ParallelizationWorkflowAgent(ChatClient chatClient) {
+    super(chatClient);
   }
 
-  public ParallelizationWorkflowAgent() {
+  public ParallelizationWorkflowAgent(ChatClient chatClient, @Nullable Type responseType) {
+    super(chatClient, responseType);
   }
 
   protected final CopyOnWriteArrayList<SubtaskContext> subtasks = new CopyOnWriteArrayList<>();
@@ -145,6 +147,14 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
   public abstract static class DirectAssembling<Request, Response> extends
       ParallelizationWorkflowAgent<Request, Response> {
 
+    public DirectAssembling(ChatClient chatClient) {
+      super(chatClient);
+    }
+
+    public DirectAssembling(ChatClient chatClient, @Nullable Type responseType) {
+      super(chatClient, responseType);
+    }
+
     @Override
     protected String getPromptTemplate() {
       return "";
@@ -161,11 +171,12 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
   public abstract static class PromptBasedAssembling<Request, Response> extends
       ParallelizationWorkflowAgent<Request, Response> {
 
-    public PromptBasedAssembling() {
+    public PromptBasedAssembling(ChatClient chatClient) {
+      super(chatClient);
     }
 
-    public PromptBasedAssembling(@Nullable Type responseType) {
-      super(responseType);
+    public PromptBasedAssembling(ChatClient chatClient, @Nullable Type responseType) {
+      super(chatClient, responseType);
     }
 
     protected abstract @Nullable Map<String, Object> getSubtasksPromptContext(

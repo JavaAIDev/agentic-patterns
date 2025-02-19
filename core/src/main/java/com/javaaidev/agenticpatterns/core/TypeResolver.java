@@ -1,6 +1,5 @@
 package com.javaaidev.agenticpatterns.core;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.ResolvableType;
@@ -25,7 +24,7 @@ public class TypeResolver {
       return Object.class;
     }
     var generics = type.getGenerics();
-    var paraType = new CustomParameterizedType(type.resolve(), new Type[generics.length],
+    var paraType = new ParameterizedTypeImpl(type.resolve(), new Type[generics.length],
         null);
     for (int i = 0; i < generics.length; i++) {
       var nestedType = generics[i];
@@ -34,24 +33,4 @@ public class TypeResolver {
     return paraType;
   }
 
-
-  private record CustomParameterizedType(@Nullable Type rawType,
-                                         Type[] actualTypeArguments,
-                                         @Nullable Type ownerType) implements ParameterizedType {
-
-    @Override
-    public Type[] getActualTypeArguments() {
-      return actualTypeArguments;
-    }
-
-    @Override
-    public Type getRawType() {
-      return rawType;
-    }
-
-    @Override
-    public Type getOwnerType() {
-      return ownerType;
-    }
-  }
 }

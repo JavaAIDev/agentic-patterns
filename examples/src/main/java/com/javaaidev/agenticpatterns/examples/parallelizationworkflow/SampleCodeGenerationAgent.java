@@ -14,6 +14,7 @@ public class SampleCodeGenerationAgent extends
   private final ChatClient chatClient;
 
   public SampleCodeGenerationAgent(ChatClient chatClient) {
+    super(chatClient);
     this.chatClient = chatClient;
   }
 
@@ -23,11 +24,6 @@ public class SampleCodeGenerationAgent extends
         Write {language} code to meet the requirement.
         {description}
         """;
-  }
-
-  @Override
-  protected ChatClient getChatClient() {
-    return this.chatClient;
   }
 
   @Override

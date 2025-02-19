@@ -16,11 +16,8 @@ import org.springframework.util.CollectionUtils;
 public class AlgorithmArticleGenerationAgent extends
     ParallelizationWorkflowAgent.PromptBasedAssembling<AlgorithmArticleGenerationRequest, AlgorithmArticleGenerationResponse> {
 
-  private final ChatClient chatClient;
-
   public AlgorithmArticleGenerationAgent(ChatClient chatClient) {
-    super(AlgorithmArticleGenerationResponse.class);
-    this.chatClient = chatClient;
+    super(chatClient, AlgorithmArticleGenerationResponse.class);
   }
 
   @Override
@@ -35,11 +32,6 @@ public class AlgorithmArticleGenerationAgent extends
         
         {sample_code}
         """;
-  }
-
-  @Override
-  protected ChatClient getChatClient() {
-    return this.chatClient;
   }
 
   @Override
@@ -70,7 +62,7 @@ public class AlgorithmArticleGenerationAgent extends
     if (CollectionUtils.isEmpty(languages)) {
       return List.of();
     }
-    var codeGenerationAgent = new SampleCodeGenerationAgent(getChatClient());
+    var codeGenerationAgent = new SampleCodeGenerationAgent(chatClient);
     return languages.stream().map(
         language -> new SubtaskCreationRequest<>(language,
             codeGenerationAgent,
