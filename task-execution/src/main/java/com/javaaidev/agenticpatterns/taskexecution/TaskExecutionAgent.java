@@ -12,8 +12,20 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.core.ParameterizedTypeReference;
 
+/**
+ * Task Execution Agent, refer to the <a
+ * href="https://javaaidev.com/docs/agentic-patterns/patterns/task-execution">pattern</a>
+ *
+ * @param <Request>  Type of task input
+ * @param <Response> Type of task output
+ */
 public abstract class TaskExecutionAgent<Request, Response> extends Agent {
 
+  /**
+   * Get the prompt template
+   *
+   * @return prompt template
+   */
   protected abstract String getPromptTemplate();
 
   @Nullable
@@ -27,6 +39,12 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
     this.responseType = responseType;
   }
 
+  /**
+   * Prepare for the values of variables in the prompt template
+   *
+   * @param request Task input
+   * @return Values of values
+   */
   @Nullable
   protected Map<String, Object> getPromptContext(@Nullable Request request) {
     return new HashMap<>();
