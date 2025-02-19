@@ -1,13 +1,18 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
-import com.javaaidev.agenticpatterns.core.AgentExecutionException;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Subtask;
+import java.util.concurrent.StructuredTaskScope.Subtask.State;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,10 +23,16 @@ import org.slf4j.LoggerFactory;
 public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {
 
-  public record SubtaskContext<Request>(
+  public record SubtaskCreationRequest<Request>(
       String taskId,
       TaskExecutionAgent<?, ?> task,
-      Function<Request, ?> requestTransformer,
+      Function<Request, ?> requestTransformer
+  ) {
+
+  }
+
+  public record SubtaskContext<Request>(
+      SubtaskCreationRequest<Request> creationRequest,
       @Nullable Subtask<?> job,
       @Nullable Object result,
       @Nullable Throwable error
@@ -30,11 +41,16 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     public static <Request, TaskRequest, TaskResponse> SubtaskContext<Request> create(String taskId,
         TaskExecutionAgent<TaskRequest, TaskResponse> task,
         Function<Request, TaskRequest> requestTransformer) {
-      return new SubtaskContext<>(taskId, task, requestTransformer, null, null, null);
+      return create(new SubtaskCreationRequest<>(taskId, task, requestTransformer));
+    }
+
+    public static <Request> SubtaskContext<Request> create(
+        SubtaskCreationRequest<Request> creationRequest) {
+      return new SubtaskContext<>(creationRequest, null, null, null);
     }
 
     public SubtaskContext<Request> taskStarted(Subtask<?> job) {
-      return new SubtaskContext<>(this.taskId(), this.task(), this.requestTransformer(), job, null,
+      return new SubtaskContext<>(this.creationRequest(), job, null,
           null);
     }
 
@@ -42,10 +58,22 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
       if (this.job() == null) {
         return this;
       }
-      return new SubtaskContext<>(this.taskId(), this.task(), this.requestTransformer(), this.job(),
-          this.job().get(),
-          this.job().exception());
+      var state = this.job().state();
+      return new SubtaskContext<>(this.creationRequest(), this.job(),
+          state == State.SUCCESS ? this.job().get() : null,
+          state == State.FAILED ? this.job().exception() : null);
     }
+
+    public String taskId() {
+      return creationRequest().taskId();
+    }
+  }
+
+  public ParallelizationWorkflowAgent(@Nullable Type responseType) {
+    super(responseType);
+  }
+
+  public ParallelizationWorkflowAgent() {
   }
 
   protected final CopyOnWriteArrayList<SubtaskContext> subtasks = new CopyOnWriteArrayList<>();
@@ -62,28 +90,55 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     return Duration.ofMinutes(3);
   }
 
-  public record PartialResult(@Nullable Object result, @Nullable Throwable error) {
-
+  @Nullable
+  protected List<SubtaskCreationRequest<Request>> createTasks(@Nullable Request request) {
+    return List.of();
   }
 
-  protected Map<String, PartialResult> runSubtasks(@Nullable Request request) {
+  public record PartialResult(@Nullable Object result, @Nullable Throwable error) {
+
+    public boolean hasResult() {
+      return result() != null;
+    }
+
+    public boolean hasError() {
+      return error() != null;
+    }
+  }
+
+  public record TaskExecutionResults(Map<String, PartialResult> results) {
+
+    public Map<String, Object> allSuccessfulResults() {
+      return results().entrySet().stream().filter(entry -> entry.getValue().hasResult())
+          .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().result()));
+    }
+  }
+
+  protected TaskExecutionResults runSubtasks(@Nullable Request request) {
+    var createdTasks = createTasks(request);
+    if (createdTasks != null) {
+      subtasks.addAll(createdTasks.stream().map(SubtaskContext::create).toList());
+    }
     try (var scope = new StructuredTaskScope<>()) {
       var jobs = subtasks.stream().map(context -> {
-        LOGGER.info("Starting subtask {}", context.taskId());
+        var creationRequest = context.creationRequest();
+        LOGGER.info("Starting subtask {}", creationRequest.taskId());
         var job = scope.fork(
-            () -> context.task().call(context.requestTransformer().apply(request)));
+            () -> creationRequest.task().call(creationRequest.requestTransformer().apply(request)));
         return context.taskStarted(job);
-      });
+      }).toList();
       try {
         LOGGER.info("Waiting for all subtasks to finish, timeout in {}", getMaxExecutionDuration());
         scope.joinUntil(Instant.now().plus(getMaxExecutionDuration()));
       } catch (InterruptedException | TimeoutException e) {
-        throw new AgentExecutionException("Failed to execute task", e);
+        LOGGER.error("Error occurred when executing subtask, check status for individual subtask",
+            e);
       }
       LOGGER.info("All subtasks completed, assembling the results");
-      return jobs.map(SubtaskContext::collectResult)
+      var results = jobs.stream().map(SubtaskContext::collectResult)
           .collect(Collectors.toMap(SubtaskContext::taskId,
-              (task -> new PartialResult(task.result(), task.error()))));
+              (task -> new PartialResult(task.result(), task.error())), (a, b) -> b));
+      return new TaskExecutionResults(results);
     }
   }
 
@@ -100,19 +155,36 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
       return assemble(runSubtasks(request));
     }
 
-    protected abstract Response assemble(Map<String, PartialResult> results);
+    protected abstract Response assemble(TaskExecutionResults results);
   }
 
   public abstract static class PromptBasedAssembling<Request, Response> extends
       ParallelizationWorkflowAgent<Request, Response> {
 
-    protected abstract @Nullable Map<String, Object> getAssemblingPromptContext(
-        Map<String, PartialResult> results);
+    public PromptBasedAssembling() {
+    }
+
+    public PromptBasedAssembling(@Nullable Type responseType) {
+      super(responseType);
+    }
+
+    protected abstract @Nullable Map<String, Object> getSubtasksPromptContext(
+        TaskExecutionResults results);
+
+    protected @Nullable Map<String, Object> getParentPromptContext(@Nullable Request request) {
+      return Map.of();
+    }
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
-      var results = runSubtasks(request);
-      return getAssemblingPromptContext(results);
+      var requestContext = Optional.ofNullable(getParentPromptContext(request))
+          .orElseGet(HashMap::new);
+      var subtasksContext = Optional.ofNullable(getSubtasksPromptContext(runSubtasks(request)))
+          .orElseGet(HashMap::new);
+      var context = new HashMap<String, Object>();
+      context.putAll(requestContext);
+      context.putAll(subtasksContext);
+      return context;
     }
   }
 }
