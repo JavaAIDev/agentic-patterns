@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>agentic-patterns-task-execution</artifactId>
+  <name>Agentic Patterns :: Task Execution</name>
 
   <dependencies>
     <dependency>

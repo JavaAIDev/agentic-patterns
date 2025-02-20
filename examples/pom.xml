@@ -9,7 +9,9 @@
     <version>3.4.1</version>
     <relativePath/>
   </parent>
+
   <artifactId>agentic-patterns-examples</artifactId>
+  <name>Agentic Patterns :: Examples</name>
 
   <properties>
     <java.version>21</java.version>
@@ -46,6 +48,11 @@
     <dependency>
       <groupId>com.javaaidev</groupId>
       <artifactId>agentic-patterns-parallelization-workflow</artifactId>
+      <version>${agentic-patterns.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.javaaidev</groupId>
+      <artifactId>agentic-patterns-routing-workflow</artifactId>
       <version>${agentic-patterns.version}</version>
     </dependency>
     <dependency>

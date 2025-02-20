@@ -9,12 +9,14 @@
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Agentic Patterns</name>
+  <description>Agentic Patterns</description>
   <modules>
     <module>task-execution</module>
     <module>core</module>
     <module>examples</module>
     <module>evaluator-optimizer</module>
     <module>parallelization-workflow</module>
+    <module>routing-workflow</module>
   </modules>
 
   <properties>

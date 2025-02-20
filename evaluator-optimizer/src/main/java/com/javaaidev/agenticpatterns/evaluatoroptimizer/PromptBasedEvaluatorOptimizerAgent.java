@@ -8,6 +8,12 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 
+/**
+ * A {@linkplain EvaluatorOptimizerAgent} implementation uses prompts for subtask agents
+ *
+ * @param <Request>
+ * @param <Response>
+ */
 public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> extends
     EvaluatorOptimizerAgent<Request, Response> {
 

@@ -1,14 +1,13 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
+import com.javaaidev.agenticpatterns.core.PromptTemplateHelper;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Subtask;
@@ -188,14 +187,8 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
-      var requestContext = Optional.ofNullable(getParentPromptContext(request))
-          .orElseGet(HashMap::new);
-      var subtasksContext = Optional.ofNullable(getSubtasksPromptContext(runSubtasks(request)))
-          .orElseGet(HashMap::new);
-      var context = new HashMap<String, Object>();
-      context.putAll(requestContext);
-      context.putAll(subtasksContext);
-      return context;
+      return PromptTemplateHelper.mergeMap(getParentPromptContext(request),
+          getSubtasksPromptContext(runSubtasks(request)));
     }
   }
 }

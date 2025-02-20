@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Evaluator-Optimizer Agent, refer to the <a
+ * href="https://javaaidev.com/docs/agentic-patterns/patterns/evaluator-optimizer">pattern</a>
+ *
  * @param <Request>
  * @param <Response>
  */
@@ -19,14 +22,34 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EvaluatorOptimizerAgent.class);
 
+  /**
+   * The maximum number of evaluation iterations, default to 3
+   *
+   * @return Maximum number of iterations
+   */
   protected int getMaxIterations() {
     return 3;
   }
 
+  /**
+   * Build the agent to generation initial result
+   *
+   * @return the agent, see {@linkplain TaskExecutionAgent}
+   */
   protected abstract TaskExecutionAgent<Request, Response> buildInitialResultAgent();
 
+  /**
+   * Build the agent to evaluate the result
+   *
+   * @return the agent, see {@linkplain TaskExecutionAgent}
+   */
   protected abstract TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent();
 
+  /**
+   * Build the agent to optimize the result
+   *
+   * @return the agent, see {@linkplain TaskExecutionAgent}
+   */
   protected abstract TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent();
 
   public Response call(@Nullable Request request) {
