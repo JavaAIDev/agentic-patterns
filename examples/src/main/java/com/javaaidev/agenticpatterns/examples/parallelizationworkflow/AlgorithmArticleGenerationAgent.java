@@ -57,7 +57,7 @@ public class AlgorithmArticleGenerationAgent extends
   protected @Nullable List<SubtaskCreationRequest<AlgorithmArticleGenerationRequest>> createTasks(
       @Nullable AlgorithmArticleGenerationRequest request) {
     var languages = Utils.safeGet(request,
-        AlgorithmArticleGenerationRequest::languages, List.of());
+        AlgorithmArticleGenerationRequest::languages, List.<String>of());
     if (CollectionUtils.isEmpty(languages)) {
       return List.of();
     }
