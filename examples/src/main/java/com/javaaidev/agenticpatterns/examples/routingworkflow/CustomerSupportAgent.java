@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.routingworkflow;
 
-import com.javaaidev.agenticpatterns.core.PromptTemplateHelper;
+import com.javaaidev.agenticpatterns.core.Utils;
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportRequest;
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportResponse;
 import com.javaaidev.agenticpatterns.routingworkflow.RoutingWorkflowAgent;
@@ -26,12 +26,17 @@ public class CustomerSupportAgent extends
   }
 
   private void initRoutes() {
-    addRoutingChoice(new RoutingChoice<>("payment", "Handle requests about payment and refund",
+    addRoutingChoice(new RoutingChoice<>("payment", "Handle queries about payment and refund",
         new PaymentSupportAgent(chatClient)));
-    addRoutingChoice(new RoutingChoice<>("shipping", "Handle requests about shipping",
+    addRoutingChoice(new RoutingChoice<>("shipping", "Handle queries about shipping",
         new ShippingSupportAgent(chatClient)));
-    addRoutingChoice(new RoutingChoice<>("general", "Handle general requests",
+    addRoutingChoice(new RoutingChoice<>("general", "Handle general queries",
         new GeneralSupportAgent(chatClient)));
+  }
+
+  @Override
+  protected String formatRequest(@Nullable CustomerSupportRequest request) {
+    return Utils.safeGet(request, CustomerSupportRequest::question, "");
   }
 
   public record CustomerSupportRequest(String question) {
@@ -59,13 +64,13 @@ public class CustomerSupportAgent extends
         @Nullable CustomerSupportRequest customerSupportRequest) {
       return Map.of(
           "question",
-          PromptTemplateHelper.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          Utils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
       );
     }
 
     @Override
     protected void updateRequest(ChatClientRequestSpec spec) {
-      spec.system("Pretend to be a customer support agent for payment, be polite and helper");
+      spec.system("You are a customer support agent for payment, be polite and helper");
     }
   }
 
@@ -86,13 +91,13 @@ public class CustomerSupportAgent extends
         @Nullable CustomerSupportRequest customerSupportRequest) {
       return Map.of(
           "question",
-          PromptTemplateHelper.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          Utils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
       );
     }
 
     @Override
     protected void updateRequest(ChatClientRequestSpec spec) {
-      spec.system("Pretend to be a customer support agent for shipping, be polite and helper");
+      spec.system("You are a customer support agent for shipping, be polite and helper");
     }
   }
 
@@ -113,14 +118,14 @@ public class CustomerSupportAgent extends
         @Nullable CustomerSupportRequest customerSupportRequest) {
       return Map.of(
           "question",
-          PromptTemplateHelper.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          Utils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
       );
     }
 
     @Override
     protected void updateRequest(ChatClientRequestSpec spec) {
       spec.system(
-          "Pretend to be a customer support agent for general questions, be polite and helper");
+          "You are a customer support agent for general questions, be polite and helper");
     }
   }
 }

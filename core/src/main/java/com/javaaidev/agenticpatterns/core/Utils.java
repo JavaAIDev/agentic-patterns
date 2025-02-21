@@ -9,7 +9,7 @@ import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 
-public class PromptTemplateHelper {
+public class Utils {
 
   public static String loadPromptTemplateFromClasspath(String resource) {
     try {

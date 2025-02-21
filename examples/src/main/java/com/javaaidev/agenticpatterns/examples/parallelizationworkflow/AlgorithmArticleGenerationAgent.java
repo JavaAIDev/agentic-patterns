@@ -1,5 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.parallelizationworkflow;
 
+import com.javaaidev.agenticpatterns.core.Utils;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationResponse;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
@@ -7,7 +8,6 @@ import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCode
 import com.javaaidev.agenticpatterns.parallelizationworkflow.ParallelizationWorkflowAgent;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
@@ -37,9 +37,8 @@ public class AlgorithmArticleGenerationAgent extends
   @Override
   protected @Nullable Map<String, Object> getParentPromptContext(
       @Nullable AlgorithmArticleGenerationRequest request) {
-    var algorithm = Optional.ofNullable(request).map(AlgorithmArticleGenerationRequest::algorithm)
-        .orElse("");
-    return Map.of("algorithm", algorithm);
+    return Map.of("algorithm",
+        Utils.safeGet(request, AlgorithmArticleGenerationRequest::algorithm, ""));
   }
 
   @Override
@@ -57,8 +56,8 @@ public class AlgorithmArticleGenerationAgent extends
   @Override
   protected @Nullable List<SubtaskCreationRequest<AlgorithmArticleGenerationRequest>> createTasks(
       @Nullable AlgorithmArticleGenerationRequest request) {
-    var languages = Optional.ofNullable(request).map(AlgorithmArticleGenerationRequest::languages)
-        .orElse(List.of());
+    var languages = Utils.safeGet(request,
+        AlgorithmArticleGenerationRequest::languages, List.of());
     if (CollectionUtils.isEmpty(languages)) {
       return List.of();
     }

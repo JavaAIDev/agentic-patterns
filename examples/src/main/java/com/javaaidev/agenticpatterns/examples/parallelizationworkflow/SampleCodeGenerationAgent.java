@@ -1,10 +1,10 @@
 package com.javaaidev.agenticpatterns.examples.parallelizationworkflow;
 
+import com.javaaidev.agenticpatterns.core.Utils;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationResponse;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import java.util.Map;
-import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 
@@ -29,13 +29,11 @@ public class SampleCodeGenerationAgent extends
   @Override
   protected @Nullable Map<String, Object> getPromptContext(
       @Nullable SampleCodeGenerationRequest request) {
-    var language = Optional.ofNullable(request)
-        .map(SampleCodeGenerationRequest::language).orElse("java");
-    var description = Optional.ofNullable(request)
-        .map(SampleCodeGenerationRequest::description).orElse("");
     return Map.of(
-        "language", language,
-        "description", description
+        "language",
+        Utils.safeGet(request, SampleCodeGenerationRequest::language, "java"),
+        "description",
+        Utils.safeGet(request, SampleCodeGenerationRequest::description, "")
     );
   }
 

@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
-import com.javaaidev.agenticpatterns.core.PromptTemplateHelper;
+import com.javaaidev.agenticpatterns.core.Utils;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -187,7 +187,7 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
-      return PromptTemplateHelper.mergeMap(getParentPromptContext(request),
+      return Utils.mergeMap(getParentPromptContext(request),
           getSubtasksPromptContext(runSubtasks(request)));
     }
   }

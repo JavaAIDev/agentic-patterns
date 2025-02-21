@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.evaluatoroptimizer;
 
-import com.javaaidev.agenticpatterns.core.PromptTemplateHelper;
+import com.javaaidev.agenticpatterns.core.Utils;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.PromptBasedEvaluatorOptimizerAgent;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationResponse;
@@ -30,35 +30,33 @@ public class CodeGenerationAgent extends
 
   @Override
   protected String getInitialResultPromptTemplate() {
-    return PromptTemplateHelper.loadPromptTemplateFromClasspath(
+    return Utils.loadPromptTemplateFromClasspath(
         "prompt_template/code-generator/initial-result.st");
   }
 
   @Override
   protected @Nullable Map<String, Object> buildInitialResultPromptContext(
       @Nullable CodeGenerationRequest codeGenerationRequest) {
-    var input = Optional.ofNullable(codeGenerationRequest).map(CodeGenerationRequest::input)
-        .orElse("");
-    return Map.of("input", input);
+    return Map.of("input",
+        Utils.safeGet(codeGenerationRequest, CodeGenerationRequest::input, ""));
   }
 
   @Override
   protected String getEvaluationPromptTemplate() {
-    return PromptTemplateHelper.loadPromptTemplateFromClasspath(
+    return Utils.loadPromptTemplateFromClasspath(
         "prompt_template/code-generator/evaluation.st");
   }
 
   @Override
   protected @Nullable Map<String, Object> buildEvaluationPromptContext(
       @Nullable CodeGenerationResponse codeGenerationResponse) {
-    var code = Optional.ofNullable(codeGenerationResponse).map(CodeGenerationResponse::code)
-        .orElse("");
-    return Map.of("code", code);
+    return Map.of("code",
+        Utils.safeGet(codeGenerationResponse, CodeGenerationResponse::code, ""));
   }
 
   @Override
   protected String getOptimizationPromptTemplate() {
-    return PromptTemplateHelper.loadPromptTemplateFromClasspath(
+    return Utils.loadPromptTemplateFromClasspath(
         "prompt_template/code-generator/optimization.st");
   }
 

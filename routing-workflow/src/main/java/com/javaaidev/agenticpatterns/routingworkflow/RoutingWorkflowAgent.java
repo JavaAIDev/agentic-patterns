@@ -68,15 +68,19 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
         """;
   }
 
+  protected String formatRequest(@Nullable Request request) {
+    return Objects.toString(request, "");
+  }
+
   protected @Nullable Map<String, Object> getRoutingPromptContext(
       @Nullable RoutingRequest<Request, Response> routingRequest) {
     Assert.notNull(routingRequest, "routing request cannot be null");
     var choices = routingChoices.stream().map(choice ->
-            "- %s: %s\n".formatted(choice.name(), choice.description()))
-        .collect(Collectors.joining("\n\n"));
+            "- %s: %s".formatted(choice.name(), choice.description()))
+        .collect(Collectors.joining("\n"));
     return Map.of(
         "choices", choices,
-        "input", Objects.toString(routingRequest.request(), "")
+        "input", formatRequest(routingRequest.request())
     );
   }
 
