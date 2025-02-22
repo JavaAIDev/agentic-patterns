@@ -17,6 +17,7 @@
     <module>evaluator-optimizer</module>
     <module>parallelization-workflow</module>
     <module>routing-workflow</module>
+    <module>chain-workflow</module>
   </modules>
 
   <properties>
