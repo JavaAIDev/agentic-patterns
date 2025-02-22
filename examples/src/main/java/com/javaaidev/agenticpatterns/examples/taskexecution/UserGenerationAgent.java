@@ -5,10 +5,13 @@ import com.javaaidev.agenticpatterns.examples.taskexecution.UserGenerationAgent.
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 
-public class UserGenerationAgent extends TaskExecutionAgent<UserGenerationRequest, List<User>> {
+public class UserGenerationAgent extends
+    TaskExecutionAgent<UserGenerationRequest, List<User>> implements
+    Function<UserGenerationRequest, List<User>> {
 
   public UserGenerationAgent(ChatClient chatClient) {
     super(chatClient);

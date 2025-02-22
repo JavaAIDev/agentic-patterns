@@ -7,8 +7,8 @@ spring:
       api-key: ${OPENAI_API_KEY:}
       chat:
         options:
-          model: gpt-3.5-turbo
-          temperature: 0.
+          model: gpt-4o
+          temperature: 0.0
 logging:
   level:
     org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG

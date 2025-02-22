@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
@@ -20,7 +21,8 @@ import org.springframework.core.ParameterizedTypeReference;
  * @param <Request>  Type of task input
  * @param <Response> Type of task output
  */
-public abstract class TaskExecutionAgent<Request, Response> extends Agent {
+public abstract class TaskExecutionAgent<Request, Response> extends Agent implements
+    Function<Request, Response> {
 
   /**
    * Get the prompt template
@@ -59,6 +61,11 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent {
    * @param spec {@linkplain ChatClientRequestSpec} from Spring AI
    */
   protected void updateRequest(ChatClientRequestSpec spec) {
+  }
+
+  @Override
+  public Response apply(Request request) {
+    return call(request);
   }
 
   public Response call(@Nullable Request request) {

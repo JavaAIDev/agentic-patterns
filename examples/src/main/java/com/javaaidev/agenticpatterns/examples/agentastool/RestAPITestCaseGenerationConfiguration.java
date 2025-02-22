@@ -1,20 +1,18 @@
-package com.javaaidev.agenticpatterns.examples.taskexecution;
+package com.javaaidev.agenticpatterns.examples.agentastool;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 
 @Configuration
-public class UserGenerationConfiguration {
+public class RestAPITestCaseGenerationConfiguration {
 
   @Bean
-  @Description("Generate test user")
-  public UserGenerationAgent userGenerationAgent(
+  public RestAPITestCaseGenerationAgent restAPITestCaseGenerationAgent(
       ChatClient.Builder chatClientBuilder,
       SimpleLoggerAdvisor simpleLoggerAdvisor) {
-    return new UserGenerationAgent(
+    return new RestAPITestCaseGenerationAgent(
         chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build());
   }
 }
