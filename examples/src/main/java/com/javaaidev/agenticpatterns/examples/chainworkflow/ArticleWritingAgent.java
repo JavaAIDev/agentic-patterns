@@ -3,7 +3,7 @@ package com.javaaidev.agenticpatterns.examples.chainworkflow;
 import com.javaaidev.agenticpatterns.chainworkflow.ChainStepAgent;
 import com.javaaidev.agenticpatterns.chainworkflow.ChainWorkflowAgent;
 import com.javaaidev.agenticpatterns.chainworkflow.WorkflowChain;
-import com.javaaidev.agenticpatterns.core.Utils;
+import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.examples.chainworkflow.ArticleWritingAgent.ArticleWritingRequest;
 import com.javaaidev.agenticpatterns.examples.chainworkflow.ArticleWritingAgent.ArticleWritingResponse;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
@@ -71,7 +71,7 @@ public class ArticleWritingAgent extends
     protected @Nullable Map<String, Object> getPromptContext(
         @Nullable ArticleWritingRequest articleWritingRequest) {
       return Map.of(
-          "topic", Utils.safeGet(articleWritingRequest, ArticleWritingRequest::topic, "")
+          "topic", AgentUtils.safeGet(articleWritingRequest, ArticleWritingRequest::topic, "")
       );
     }
   }
@@ -150,7 +150,7 @@ public class ArticleWritingAgent extends
       return Map.of(
           "instruction", instruction,
           "article",
-          Utils.safeGet(articleImprovementRequest, ArticleImprovementRequest::article, "")
+          AgentUtils.safeGet(articleImprovementRequest, ArticleImprovementRequest::article, "")
       );
     }
 

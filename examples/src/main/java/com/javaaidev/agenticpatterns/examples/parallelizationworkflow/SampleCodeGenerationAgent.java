@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.parallelizationworkflow;
 
-import com.javaaidev.agenticpatterns.core.Utils;
+import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationResponse;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
@@ -31,9 +31,9 @@ public class SampleCodeGenerationAgent extends
       @Nullable SampleCodeGenerationRequest request) {
     return Map.of(
         "language",
-        Utils.safeGet(request, SampleCodeGenerationRequest::language, "java"),
+        AgentUtils.safeGet(request, SampleCodeGenerationRequest::language, "java"),
         "description",
-        Utils.safeGet(request, SampleCodeGenerationRequest::description, "")
+        AgentUtils.safeGet(request, SampleCodeGenerationRequest::description, "")
     );
   }
 

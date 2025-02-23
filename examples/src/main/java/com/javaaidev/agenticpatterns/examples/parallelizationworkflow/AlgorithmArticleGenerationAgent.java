@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.parallelizationworkflow;
 
-import com.javaaidev.agenticpatterns.core.Utils;
+import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationResponse;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
@@ -38,7 +38,7 @@ public class AlgorithmArticleGenerationAgent extends
   protected @Nullable Map<String, Object> getParentPromptContext(
       @Nullable AlgorithmArticleGenerationRequest request) {
     return Map.of("algorithm",
-        Utils.safeGet(request, AlgorithmArticleGenerationRequest::algorithm, ""));
+        AgentUtils.safeGet(request, AlgorithmArticleGenerationRequest::algorithm, ""));
   }
 
   @Override
@@ -56,7 +56,7 @@ public class AlgorithmArticleGenerationAgent extends
   @Override
   protected @Nullable List<SubtaskCreationRequest<AlgorithmArticleGenerationRequest>> createTasks(
       @Nullable AlgorithmArticleGenerationRequest request) {
-    var languages = Utils.safeGet(request,
+    var languages = AgentUtils.safeGet(request,
         AlgorithmArticleGenerationRequest::languages, List.<String>of());
     if (CollectionUtils.isEmpty(languages)) {
       return List.of();

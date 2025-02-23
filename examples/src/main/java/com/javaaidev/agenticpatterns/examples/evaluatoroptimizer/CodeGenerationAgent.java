@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.evaluatoroptimizer;
 
-import com.javaaidev.agenticpatterns.core.Utils;
+import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.PromptBasedEvaluatorOptimizerAgent;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationResponse;
@@ -30,7 +30,7 @@ public class CodeGenerationAgent extends
 
   @Override
   protected String getInitialResultPromptTemplate() {
-    return Utils.loadPromptTemplateFromClasspath(
+    return AgentUtils.loadPromptTemplateFromClasspath(
         "prompt_template/code-generator/initial-result.st");
   }
 
@@ -38,12 +38,12 @@ public class CodeGenerationAgent extends
   protected @Nullable Map<String, Object> buildInitialResultPromptContext(
       @Nullable CodeGenerationRequest codeGenerationRequest) {
     return Map.of("input",
-        Utils.safeGet(codeGenerationRequest, CodeGenerationRequest::input, ""));
+        AgentUtils.safeGet(codeGenerationRequest, CodeGenerationRequest::input, ""));
   }
 
   @Override
   protected String getEvaluationPromptTemplate() {
-    return Utils.loadPromptTemplateFromClasspath(
+    return AgentUtils.loadPromptTemplateFromClasspath(
         "prompt_template/code-generator/evaluation.st");
   }
 
@@ -51,12 +51,12 @@ public class CodeGenerationAgent extends
   protected @Nullable Map<String, Object> buildEvaluationPromptContext(
       @Nullable CodeGenerationResponse codeGenerationResponse) {
     return Map.of("code",
-        Utils.safeGet(codeGenerationResponse, CodeGenerationResponse::code, ""));
+        AgentUtils.safeGet(codeGenerationResponse, CodeGenerationResponse::code, ""));
   }
 
   @Override
   protected String getOptimizationPromptTemplate() {
-    return Utils.loadPromptTemplateFromClasspath(
+    return AgentUtils.loadPromptTemplateFromClasspath(
         "prompt_template/code-generator/optimization.st");
   }
 

@@ -1,6 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.routingworkflow;
 
-import com.javaaidev.agenticpatterns.core.Utils;
+import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportRequest;
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportResponse;
 import com.javaaidev.agenticpatterns.routingworkflow.RoutingWorkflowAgent;
@@ -36,7 +36,7 @@ public class CustomerSupportAgent extends
 
   @Override
   protected String formatRequest(@Nullable CustomerSupportRequest request) {
-    return Utils.safeGet(request, CustomerSupportRequest::question, "");
+    return AgentUtils.safeGet(request, CustomerSupportRequest::question, "");
   }
 
   public record CustomerSupportRequest(String question) {
@@ -64,7 +64,7 @@ public class CustomerSupportAgent extends
         @Nullable CustomerSupportRequest customerSupportRequest) {
       return Map.of(
           "question",
-          Utils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          AgentUtils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
       );
     }
 
@@ -91,7 +91,7 @@ public class CustomerSupportAgent extends
         @Nullable CustomerSupportRequest customerSupportRequest) {
       return Map.of(
           "question",
-          Utils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          AgentUtils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
       );
     }
 
@@ -118,7 +118,7 @@ public class CustomerSupportAgent extends
         @Nullable CustomerSupportRequest customerSupportRequest) {
       return Map.of(
           "question",
-          Utils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          AgentUtils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
       );
     }
 

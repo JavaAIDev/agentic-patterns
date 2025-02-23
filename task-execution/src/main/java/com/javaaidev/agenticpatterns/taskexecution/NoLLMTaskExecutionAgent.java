@@ -13,6 +13,14 @@ import org.springframework.ai.chat.client.ChatClient;
 public abstract class NoLLMTaskExecutionAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {
 
+  public NoLLMTaskExecutionAgent() {
+    super(null);
+  }
+
+  public NoLLMTaskExecutionAgent(@Nullable Type responseType) {
+    super(null, responseType);
+  }
+
   protected NoLLMTaskExecutionAgent(ChatClient chatClient) {
     super(chatClient);
   }
