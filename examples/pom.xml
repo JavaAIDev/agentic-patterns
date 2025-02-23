@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.javaaidev</groupId>
     <artifactId>agentic-patterns</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
   </parent>
 
   <artifactId>agentic-patterns-examples</artifactId>
@@ -17,7 +17,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <agentic-patterns.version>0.1.0</agentic-patterns.version>
+    <agentic-patterns.version>0.1.1</agentic-patterns.version>
     <spring-ai.version>1.0.0-M5</spring-ai.version>
     <spring-boot.version>3.4.1</spring-boot.version>
   </properties>
