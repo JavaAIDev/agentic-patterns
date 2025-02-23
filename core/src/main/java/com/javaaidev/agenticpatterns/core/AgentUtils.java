@@ -1,5 +1,8 @@
 package com.javaaidev.agenticpatterns.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -10,6 +13,9 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 
 public class AgentUtils {
+
+  private static final ObjectMapper objectMapper = new ObjectMapper().enable(
+      SerializationFeature.INDENT_OUTPUT);
 
   public static String loadPromptTemplateFromClasspath(String resource) {
     try {
@@ -33,5 +39,13 @@ public class AgentUtils {
 
   public static <T, R> R safeGet(@Nullable T obj, Function<T, R> extractor, R defaultValue) {
     return Optional.ofNullable(obj).map(extractor).orElse(defaultValue);
+  }
+
+  public static String toJson(Object input) {
+    try {
+      return objectMapper.writeValueAsString(input);
+    } catch (JsonProcessingException e) {
+      return "{}";
+    }
   }
 }

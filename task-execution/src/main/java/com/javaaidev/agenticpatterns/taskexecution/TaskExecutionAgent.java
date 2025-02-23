@@ -3,6 +3,10 @@ package com.javaaidev.agenticpatterns.taskexecution;
 import com.javaaidev.agenticpatterns.core.Agent;
 import com.javaaidev.agenticpatterns.core.AgentExecutionException;
 import com.javaaidev.agenticpatterns.core.TypeResolver;
+import com.javaaidev.agenticpatterns.core.observation.AgentExecutionObservationContext;
+import com.javaaidev.agenticpatterns.core.observation.AgentExecutionObservationDocumentation;
+import com.javaaidev.agenticpatterns.core.observation.DefaultAgentExecutionObservationConvention;
+import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -35,12 +39,22 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
   protected final Type responseType;
 
   protected TaskExecutionAgent(ChatClient chatClient) {
-    super(chatClient);
-    responseType = TypeResolver.resolveType(this.getClass(), TaskExecutionAgent.class, 1);
+    this(chatClient, (ObservationRegistry) null);
   }
 
   protected TaskExecutionAgent(ChatClient chatClient, @Nullable Type responseType) {
-    super(chatClient);
+    this(chatClient, responseType, null);
+  }
+
+  protected TaskExecutionAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, observationRegistry);
+    responseType = TypeResolver.resolveType(this.getClass(), TaskExecutionAgent.class, 1);
+  }
+
+  protected TaskExecutionAgent(ChatClient chatClient, @Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, observationRegistry);
     this.responseType = responseType;
   }
 
@@ -69,6 +83,34 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
   }
 
   public Response call(@Nullable Request request) {
+    return instrumentedCall(request, this::doCall);
+  }
+
+  protected Response instrumentedCall(Request request, Function<Request, Response> action) {
+    if (observationRegistry == null) {
+      return action.apply(request);
+    }
+    var observationContext = new AgentExecutionObservationContext(getName(), request);
+    var observation =
+        AgentExecutionObservationDocumentation.AGENT_EXECUTION.observation(
+            null,
+            new DefaultAgentExecutionObservationConvention(),
+            () -> observationContext,
+            observationRegistry
+        ).start();
+    try (var ignored = observation.openScope()) {
+      var response = action.apply(request);
+      observationContext.setResponse(response);
+      return response;
+    } catch (Exception e) {
+      observation.error(e);
+      throw new AgentExecutionException("Error in agent execution", e);
+    } finally {
+      observation.stop();
+    }
+  }
+
+  private Response doCall(@Nullable Request request) {
     var template = getPromptTemplate();
     if (template.isBlank()) {
       throw new AgentExecutionException("Blank prompt template");
@@ -93,5 +135,4 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
     }
     return output;
   }
-
 }
