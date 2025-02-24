@@ -5,6 +5,7 @@ import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAge
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportResponse;
 import com.javaaidev.agenticpatterns.routingworkflow.RoutingWorkflowAgent;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
@@ -15,23 +16,24 @@ public class CustomerSupportAgent extends
     RoutingWorkflowAgent<CustomerSupportRequest, CustomerSupportResponse> {
 
   protected CustomerSupportAgent(ChatClient chatClient,
-      @Nullable Type responseType) {
-    super(chatClient, responseType);
+      @Nullable Type responseType, @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, responseType, observationRegistry);
     initRoutes();
   }
 
-  protected CustomerSupportAgent(ChatClient chatClient) {
-    super(chatClient);
+  protected CustomerSupportAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, observationRegistry);
     initRoutes();
   }
 
   private void initRoutes() {
     addRoutingChoice(new RoutingChoice<>("payment", "Handle queries about payment and refund",
-        new PaymentSupportAgent(chatClient)));
+        new PaymentSupportAgent(chatClient, observationRegistry)));
     addRoutingChoice(new RoutingChoice<>("shipping", "Handle queries about shipping",
-        new ShippingSupportAgent(chatClient)));
+        new ShippingSupportAgent(chatClient, observationRegistry)));
     addRoutingChoice(new RoutingChoice<>("general", "Handle general queries",
-        new GeneralSupportAgent(chatClient)));
+        new GeneralSupportAgent(chatClient, observationRegistry)));
   }
 
   @Override
@@ -50,8 +52,9 @@ public class CustomerSupportAgent extends
   private static class PaymentSupportAgent extends
       TaskExecutionAgent<CustomerSupportRequest, CustomerSupportResponse> {
 
-    protected PaymentSupportAgent(ChatClient chatClient) {
-      super(chatClient);
+    protected PaymentSupportAgent(ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, observationRegistry);
     }
 
     @Override
@@ -77,8 +80,9 @@ public class CustomerSupportAgent extends
   private static class ShippingSupportAgent extends
       TaskExecutionAgent<CustomerSupportRequest, CustomerSupportResponse> {
 
-    protected ShippingSupportAgent(ChatClient chatClient) {
-      super(chatClient);
+    protected ShippingSupportAgent(ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, observationRegistry);
     }
 
     @Override
@@ -104,8 +108,9 @@ public class CustomerSupportAgent extends
   private static class GeneralSupportAgent extends
       TaskExecutionAgent<CustomerSupportRequest, CustomerSupportResponse> {
 
-    protected GeneralSupportAgent(ChatClient chatClient) {
-      super(chatClient);
+    protected GeneralSupportAgent(ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, observationRegistry);
     }
 
     @Override

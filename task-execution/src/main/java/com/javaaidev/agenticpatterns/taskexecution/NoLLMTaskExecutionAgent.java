@@ -1,8 +1,8 @@
 package com.javaaidev.agenticpatterns.taskexecution;
 
+import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import org.jspecify.annotations.Nullable;
-import org.springframework.ai.chat.client.ChatClient;
 
 /**
  * A task execution agent without using LLM
@@ -13,21 +13,18 @@ import org.springframework.ai.chat.client.ChatClient;
 public abstract class NoLLMTaskExecutionAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {
 
-  public NoLLMTaskExecutionAgent() {
+  protected NoLLMTaskExecutionAgent() {
     super(null);
   }
-
-  public NoLLMTaskExecutionAgent(@Nullable Type responseType) {
-    super(null, responseType);
+  
+  protected NoLLMTaskExecutionAgent(
+      @Nullable ObservationRegistry observationRegistry) {
+    super(null, null, observationRegistry);
   }
 
-  protected NoLLMTaskExecutionAgent(ChatClient chatClient) {
-    super(chatClient);
-  }
-
-  public NoLLMTaskExecutionAgent(ChatClient chatClient,
-      @Nullable Type responseType) {
-    super(chatClient, responseType);
+  protected NoLLMTaskExecutionAgent(@Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(null, responseType, observationRegistry);
   }
 
   @Override

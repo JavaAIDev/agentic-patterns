@@ -1,7 +1,7 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
-import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
@@ -69,12 +69,15 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     }
   }
 
-  public ParallelizationWorkflowAgent(ChatClient chatClient) {
-    super(chatClient);
+  public ParallelizationWorkflowAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, observationRegistry);
   }
 
-  public ParallelizationWorkflowAgent(ChatClient chatClient, @Nullable Type responseType) {
-    super(chatClient, responseType);
+  public ParallelizationWorkflowAgent(ChatClient chatClient,
+      @Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, responseType, observationRegistry);
   }
 
   protected final CopyOnWriteArrayList<SubtaskContext> subtasks = new CopyOnWriteArrayList<>();
@@ -143,52 +146,4 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     }
   }
 
-  public abstract static class DirectAssembling<Request, Response> extends
-      ParallelizationWorkflowAgent<Request, Response> {
-
-    public DirectAssembling(ChatClient chatClient) {
-      super(chatClient);
-    }
-
-    public DirectAssembling(ChatClient chatClient, @Nullable Type responseType) {
-      super(chatClient, responseType);
-    }
-
-    @Override
-    protected String getPromptTemplate() {
-      return "";
-    }
-
-    @Override
-    public Response call(@Nullable Request request) {
-      return assemble(runSubtasks(request));
-    }
-
-    protected abstract Response assemble(TaskExecutionResults results);
-  }
-
-  public abstract static class PromptBasedAssembling<Request, Response> extends
-      ParallelizationWorkflowAgent<Request, Response> {
-
-    public PromptBasedAssembling(ChatClient chatClient) {
-      super(chatClient);
-    }
-
-    public PromptBasedAssembling(ChatClient chatClient, @Nullable Type responseType) {
-      super(chatClient, responseType);
-    }
-
-    protected abstract @Nullable Map<String, Object> getSubtasksPromptContext(
-        TaskExecutionResults results);
-
-    protected @Nullable Map<String, Object> getParentPromptContext(@Nullable Request request) {
-      return Map.of();
-    }
-
-    @Override
-    protected @Nullable Map<String, Object> getPromptContext(@Nullable Request request) {
-      return AgentUtils.mergeMap(getParentPromptContext(request),
-          getSubtasksPromptContext(runSubtasks(request)));
-    }
-  }
 }

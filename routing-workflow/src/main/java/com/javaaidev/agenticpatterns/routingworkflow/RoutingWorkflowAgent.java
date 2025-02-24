@@ -2,6 +2,7 @@ package com.javaaidev.agenticpatterns.routingworkflow;
 
 import com.javaaidev.agenticpatterns.core.AgentExecutionException;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +24,15 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
   private static final Logger LOGGER = LoggerFactory.getLogger(RoutingWorkflowAgent.class);
 
   protected RoutingWorkflowAgent(ChatClient chatClient,
-      @Nullable Type responseType) {
-    super(chatClient, responseType);
+      @Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, responseType, observationRegistry);
     routingAgent = new RoutingAgent(chatClient);
   }
 
-  protected RoutingWorkflowAgent(ChatClient chatClient) {
-    super(chatClient);
+  protected RoutingWorkflowAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, observationRegistry);
     routingAgent = new RoutingAgent(chatClient);
   }
 
@@ -86,6 +89,10 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
 
   @Override
   public Response call(@Nullable Request request) {
+    return instrumentedCall(request, this::doCall);
+  }
+
+  public Response doCall(@Nullable Request request) {
     LOGGER.info("Select the route for request {}", request);
     var routingTarget = routingAgent.call(new RoutingRequest<>(request, routingChoices));
     LOGGER.info("Selected routing target: {}", routingTarget);

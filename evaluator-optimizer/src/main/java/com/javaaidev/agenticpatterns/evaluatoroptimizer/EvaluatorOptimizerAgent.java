@@ -1,9 +1,13 @@
 package com.javaaidev.agenticpatterns.evaluatoroptimizer;
 
+import com.javaaidev.agenticpatterns.taskexecution.NoLLMTaskExecutionAgent;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
+import java.lang.reflect.Type;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
 
 /**
  * Evaluator-Optimizer Agent, refer to the <a
@@ -12,13 +16,42 @@ import org.slf4j.LoggerFactory;
  * @param <Request>
  * @param <Response>
  */
-public abstract class EvaluatorOptimizerAgent<Request, Response> {
+public abstract class EvaluatorOptimizerAgent<Request, Response> extends
+    NoLLMTaskExecutionAgent<Request, Response> {
 
-  protected TaskExecutionAgent<Request, Response> initialResultAgent = buildInitialResultAgent();
+  protected ChatClient generationChatClient;
+  protected ChatClient evaluationChatClient;
+
+  protected EvaluatorOptimizerAgent(ChatClient generationChatClient,
+      ChatClient evaluationChatClient) {
+    this(generationChatClient, evaluationChatClient, null, null);
+  }
+
+  public EvaluatorOptimizerAgent(ChatClient generationChatClient,
+      ChatClient evaluationChatClient, @Nullable ObservationRegistry observationRegistry) {
+    this(generationChatClient, evaluationChatClient, null, observationRegistry);
+  }
+
+  protected EvaluatorOptimizerAgent(ChatClient generationChatClient,
+      ChatClient evaluationChatClient, @Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(responseType, observationRegistry);
+    this.generationChatClient = generationChatClient;
+    this.evaluationChatClient = evaluationChatClient;
+    initAgents();
+  }
+
+  private void initAgents() {
+    initialResultAgent = buildInitialResultAgent(generationChatClient, observationRegistry);
+    evaluationAgent = buildEvaluationAgent(evaluationChatClient, observationRegistry);
+    optimizationAgent = buildOptimizationAgent(generationChatClient, observationRegistry);
+  }
+
+  protected TaskExecutionAgent<Request, Response> initialResultAgent;
   @Nullable
-  protected TaskExecutionAgent<Response, Evaluation> evaluationAgent = buildEvaluationAgent();
+  protected TaskExecutionAgent<Response, Evaluation> evaluationAgent;
   @Nullable
-  protected TaskExecutionAgent<OptimizationInput<Response>, Response> optimizationAgent = buildOptimizationAgent();
+  protected TaskExecutionAgent<OptimizationInput<Response>, Response> optimizationAgent;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EvaluatorOptimizerAgent.class);
 
@@ -36,23 +69,31 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> {
    *
    * @return the agent, see {@linkplain TaskExecutionAgent}
    */
-  protected abstract TaskExecutionAgent<Request, Response> buildInitialResultAgent();
+  protected abstract TaskExecutionAgent<Request, Response> buildInitialResultAgent(
+      ChatClient chatClient, @Nullable ObservationRegistry observationRegistry);
 
   /**
    * Build the agent to evaluate the result
    *
    * @return the agent, see {@linkplain TaskExecutionAgent}
    */
-  protected abstract TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent();
+  protected abstract TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent(
+      ChatClient chatClient, @Nullable ObservationRegistry observationRegistry);
 
   /**
    * Build the agent to optimize the result
    *
    * @return the agent, see {@linkplain TaskExecutionAgent}
    */
-  protected abstract TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent();
+  protected abstract TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent(
+      ChatClient chatClient, @Nullable ObservationRegistry observationRegistry);
 
+  @Override
   public Response call(@Nullable Request request) {
+    return instrumentedCall(request, this::doCall);
+  }
+
+  private Response doCall(@Nullable Request request) {
     var initialResult = initialResultAgent.call(request);
     if (evaluationAgent == null || optimizationAgent == null) {
       return initialResult;

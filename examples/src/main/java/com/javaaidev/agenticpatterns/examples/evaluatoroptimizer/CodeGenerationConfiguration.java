@@ -12,6 +12,7 @@ public class CodeGenerationConfiguration {
   @Bean
   public CodeGenerationAgent codeGenerationAgent(ChatClient.Builder chatClientBuilder,
       SimpleLoggerAdvisor simpleLoggerAdvisor, ObservationRegistry observationRegistry) {
-    return new CodeGenerationAgent(chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build());
+    return new CodeGenerationAgent(chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build(),
+        observationRegistry);
   }
 }

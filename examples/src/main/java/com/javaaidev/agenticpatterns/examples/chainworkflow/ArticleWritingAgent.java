@@ -7,6 +7,7 @@ import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.examples.chainworkflow.ArticleWritingAgent.ArticleWritingRequest;
 import com.javaaidev.agenticpatterns.examples.chainworkflow.ArticleWritingAgent.ArticleWritingResponse;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
@@ -18,10 +19,12 @@ public class ArticleWritingAgent extends
   private final ArticleGenerationAgent articleGenerationAgent;
   private final ArticleImprovementChainAgent articleImprovementChainAgent;
 
-  protected ArticleWritingAgent(ChatClient chatClient) {
-    super(chatClient, ArticleWritingResponse.class);
-    articleGenerationAgent = new ArticleGenerationAgent(chatClient);
-    articleImprovementChainAgent = new ArticleImprovementChainAgent(chatClient);
+  protected ArticleWritingAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, ArticleWritingResponse.class, observationRegistry);
+    articleGenerationAgent = new ArticleGenerationAgent(chatClient, observationRegistry);
+    articleImprovementChainAgent = new ArticleImprovementChainAgent(chatClient,
+        observationRegistry);
   }
 
   @Override
@@ -56,8 +59,9 @@ public class ArticleWritingAgent extends
   private static class ArticleGenerationAgent extends
       TaskExecutionAgent<ArticleWritingRequest, ArticleWritingResponse> {
 
-    protected ArticleGenerationAgent(ChatClient chatClient) {
-      super(chatClient, ArticleWritingResponse.class);
+    protected ArticleGenerationAgent(ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, ArticleWritingResponse.class, observationRegistry);
     }
 
     @Override
@@ -79,8 +83,10 @@ public class ArticleWritingAgent extends
   private static class ArticleImprovementChainAgent extends
       ChainWorkflowAgent<ArticleImprovementRequest, ArticleImprovementResponse> {
 
-    protected ArticleImprovementChainAgent(ChatClient chatClient) {
-      super(chatClient, ArticleImprovementResponse.class);
+    protected ArticleImprovementChainAgent(
+        ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, ArticleImprovementResponse.class, observationRegistry);
       initStepAgents();
     }
 
@@ -106,7 +112,8 @@ public class ArticleWritingAgent extends
               """
       );
       for (int i = 0; i < instructions.size(); i++) {
-        addStep(new ArticleImprovementAgent(chatClient, instructions.get(i), i));
+        addStep(
+            new ArticleImprovementAgent(chatClient, observationRegistry, instructions.get(i), i));
       }
     }
   }
@@ -118,8 +125,9 @@ public class ArticleWritingAgent extends
     private final String instruction;
     private final int order;
 
-    protected ArticleImprovementAgent(ChatClient chatClient, String instruction, int order) {
-      super(chatClient, ArticleImprovementResponse.class);
+    protected ArticleImprovementAgent(ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry, String instruction, int order) {
+      super(chatClient, ArticleImprovementResponse.class, observationRegistry);
       this.instruction = instruction;
       this.order = order;
     }

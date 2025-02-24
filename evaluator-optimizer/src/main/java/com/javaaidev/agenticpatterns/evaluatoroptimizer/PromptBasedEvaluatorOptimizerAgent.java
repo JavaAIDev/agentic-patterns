@@ -1,7 +1,7 @@
 package com.javaaidev.agenticpatterns.evaluatoroptimizer;
 
-import com.javaaidev.agenticpatterns.core.TypeResolver;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,18 +17,18 @@ import org.springframework.ai.chat.client.ChatClient;
 public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> extends
     EvaluatorOptimizerAgent<Request, Response> {
 
-  @Nullable
-  protected Type responseType = null;
 
-  private void tryResolveType() {
-    responseType = TypeResolver.resolveType(this.getClass(),
-        PromptBasedEvaluatorOptimizerAgent.class,
-        1);
+  protected PromptBasedEvaluatorOptimizerAgent(ChatClient generationChatClient,
+      ChatClient evaluationChatClient) {
+    this(generationChatClient, evaluationChatClient, null, null);
   }
 
-  protected abstract ChatClient getGenerationChatClient();
-
-  protected abstract ChatClient getEvaluationChatClient();
+  protected PromptBasedEvaluatorOptimizerAgent(ChatClient generationChatClient,
+      ChatClient evaluationChatClient,
+      @Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(generationChatClient, evaluationChatClient, responseType, observationRegistry);
+  }
 
   protected abstract String getInitialResultPromptTemplate();
 
@@ -39,8 +39,9 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
   public class GenerateInitialResultAgent extends TaskExecutionAgent<Request, Response> {
 
-    public GenerateInitialResultAgent(@Nullable Type responseType) {
-      super(getGenerationChatClient(), responseType);
+    public GenerateInitialResultAgent(ChatClient chatClient, @Nullable Type responseType,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, responseType, observationRegistry);
     }
 
     @Override
@@ -55,9 +56,9 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
   }
 
   @Override
-  protected TaskExecutionAgent<Request, Response> buildInitialResultAgent() {
-    tryResolveType();
-    return new GenerateInitialResultAgent(responseType);
+  protected TaskExecutionAgent<Request, Response> buildInitialResultAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    return new GenerateInitialResultAgent(chatClient, responseType, observationRegistry);
   }
 
   protected abstract String getEvaluationPromptTemplate();
@@ -69,9 +70,9 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
   public class EvaluateAgent extends TaskExecutionAgent<Response, Evaluation> {
 
-
-    protected EvaluateAgent() {
-      super(getEvaluationChatClient());
+    protected EvaluateAgent(ChatClient chatClient,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, Evaluation.class, observationRegistry);
     }
 
     @Override
@@ -86,8 +87,9 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
   }
 
   @Override
-  protected TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent() {
-    return new EvaluateAgent();
+  protected TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    return new EvaluateAgent(chatClient, observationRegistry);
   }
 
   protected abstract String getOptimizationPromptTemplate();
@@ -99,8 +101,9 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
   public class OptimizeAgent extends TaskExecutionAgent<OptimizationInput<Response>, Response> {
 
-    public OptimizeAgent(@Nullable Type responseType) {
-      super(getGenerationChatClient(), responseType);
+    public OptimizeAgent(ChatClient chatClient, @Nullable Type responseType,
+        @Nullable ObservationRegistry observationRegistry) {
+      super(chatClient, responseType, observationRegistry);
     }
 
     @Override
@@ -116,8 +119,8 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
   }
 
   @Override
-  protected TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent() {
-    tryResolveType();
-    return new OptimizeAgent(responseType);
+  protected TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent(
+      ChatClient chatClient, @Nullable ObservationRegistry observationRegistry) {
+    return new OptimizeAgent(chatClient, responseType, observationRegistry);
   }
 }

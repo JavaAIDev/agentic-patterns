@@ -4,6 +4,7 @@ import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.PromptBasedEvaluatorOptimizerAgent;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationResponse;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.Map;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
@@ -12,20 +13,9 @@ import org.springframework.ai.chat.client.ChatClient;
 public class CodeGenerationAgent extends
     PromptBasedEvaluatorOptimizerAgent<CodeGenerationRequest, CodeGenerationResponse> {
 
-  private final ChatClient chatClient;
-
-  public CodeGenerationAgent(ChatClient chatClient) {
-    this.chatClient = chatClient;
-  }
-
-  @Override
-  protected ChatClient getGenerationChatClient() {
-    return this.chatClient;
-  }
-
-  @Override
-  protected ChatClient getEvaluationChatClient() {
-    return this.chatClient;
+  public CodeGenerationAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, chatClient, CodeGenerationResponse.class, observationRegistry);
   }
 
   @Override

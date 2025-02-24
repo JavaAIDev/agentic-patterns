@@ -5,7 +5,8 @@ import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmA
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationResponse;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationResponse;
-import com.javaaidev.agenticpatterns.parallelizationworkflow.ParallelizationWorkflowAgent;
+import com.javaaidev.agenticpatterns.parallelizationworkflow.PromptBasedAssembling;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,10 +15,11 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.CollectionUtils;
 
 public class AlgorithmArticleGenerationAgent extends
-    ParallelizationWorkflowAgent.PromptBasedAssembling<AlgorithmArticleGenerationRequest, AlgorithmArticleGenerationResponse> {
+    PromptBasedAssembling<AlgorithmArticleGenerationRequest, AlgorithmArticleGenerationResponse> {
 
-  public AlgorithmArticleGenerationAgent(ChatClient chatClient) {
-    super(chatClient, AlgorithmArticleGenerationResponse.class);
+  public AlgorithmArticleGenerationAgent(ChatClient chatClient,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, AlgorithmArticleGenerationResponse.class, observationRegistry);
   }
 
   @Override
@@ -61,7 +63,7 @@ public class AlgorithmArticleGenerationAgent extends
     if (CollectionUtils.isEmpty(languages)) {
       return List.of();
     }
-    var codeGenerationAgent = new SampleCodeGenerationAgent(chatClient);
+    var codeGenerationAgent = new SampleCodeGenerationAgent(chatClient, observationRegistry);
     return languages.stream().map(
         language -> new SubtaskCreationRequest<>(language,
             codeGenerationAgent,

@@ -36,7 +36,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
   protected abstract String getPromptTemplate();
 
   @Nullable
-  protected final Type responseType;
+  protected Type responseType;
 
   protected TaskExecutionAgent(ChatClient chatClient) {
     this(chatClient, (ObservationRegistry) null);
