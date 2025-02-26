@@ -8,8 +8,16 @@ exporters:
     endpoint: tempo:4317
     tls:
       insecure: true
+  prometheus:
+    endpoint: "otel-collector:10010"
+    send_timestamps: true
+    resource_to_telemetry_conversion:
+      enabled: true
 service:
   pipelines:
+    metrics:
+      receivers: [ otlp ]
+      exporters: [ prometheus ]
     traces:
       receivers: [ otlp ]
       exporters: [ otlp ]

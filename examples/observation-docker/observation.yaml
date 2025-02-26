@@ -1,4 +1,3 @@
-version: "3"
 services:
 
   # And put them in an OTEL collector pipeline...
@@ -25,7 +24,7 @@ services:
       - "9411"   # zipkin
 
   prometheus:
-    image: prom/prometheus:v2.51.1
+    image: prom/prometheus:v3.2.0
     command:
       - --config.file=/etc/prometheus.yaml
       - --web.enable-remote-write-receiver

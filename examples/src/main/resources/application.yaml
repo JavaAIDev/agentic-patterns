@@ -12,8 +12,10 @@ spring:
 logging:
   level:
     org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG
+management:
+  tracing:
+    sampling:
+      probability: 1.0
 otel:
-  metrics:
-    exporter: none
   logs:
     exporter: none
