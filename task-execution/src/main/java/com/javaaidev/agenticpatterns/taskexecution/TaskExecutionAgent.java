@@ -28,13 +28,6 @@ import org.springframework.core.ParameterizedTypeReference;
 public abstract class TaskExecutionAgent<Request, Response> extends Agent implements
     Function<Request, Response> {
 
-  /**
-   * Get the prompt template
-   *
-   * @return prompt template
-   */
-  protected abstract String getPromptTemplate();
-
   @Nullable
   protected Type responseType;
 
@@ -49,7 +42,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
   protected TaskExecutionAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
     super(chatClient, observationRegistry);
-    responseType = TypeResolver.resolveType(this.getClass(), TaskExecutionAgent.class, 1);
+    this.responseType = TypeResolver.resolveType(this.getClass(), TaskExecutionAgent.class, 1);
   }
 
   protected TaskExecutionAgent(ChatClient chatClient, @Nullable Type responseType,
@@ -57,6 +50,13 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
     super(chatClient, observationRegistry);
     this.responseType = responseType;
   }
+
+  /**
+   * Get the prompt template
+   *
+   * @return prompt template
+   */
+  protected abstract String getPromptTemplate();
 
   /**
    * Prepare for the values of variables in the prompt template
@@ -74,7 +74,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
    *
    * @param spec {@linkplain ChatClientRequestSpec} from Spring AI
    */
-  protected void updateRequest(ChatClientRequestSpec spec) {
+  protected void updateChatClientRequest(ChatClientRequestSpec spec) {
   }
 
   @Override
@@ -120,7 +120,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
         HashMap::new);
     var requestSpec = chatClient.prompt().user(userSpec -> userSpec.text(template)
         .params(context));
-    updateRequest(requestSpec);
+    updateChatClientRequest(requestSpec);
     var responseSpec = requestSpec.call();
     Response output;
     if (type instanceof Class<?> clazz) {

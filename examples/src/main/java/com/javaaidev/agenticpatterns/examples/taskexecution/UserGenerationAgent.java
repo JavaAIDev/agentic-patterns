@@ -25,7 +25,7 @@ public class UserGenerationAgent extends
   }
 
   @Override
-  protected @Nullable Map<String, Object> getPromptContext(
+  protected Map<String, Object> getPromptContext(
       @Nullable UserGenerationRequest userGenerationRequest) {
     var count = AgentUtils.safeGet(userGenerationRequest, UserGenerationRequest::count,
         1);

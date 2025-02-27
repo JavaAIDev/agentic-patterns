@@ -72,7 +72,7 @@ public class CustomerSupportAgent extends
     }
 
     @Override
-    protected void updateRequest(ChatClientRequestSpec spec) {
+    protected void updateChatClientRequest(ChatClientRequestSpec spec) {
       spec.system("You are a customer support agent for payment, be polite and helper");
     }
   }
@@ -100,7 +100,7 @@ public class CustomerSupportAgent extends
     }
 
     @Override
-    protected void updateRequest(ChatClientRequestSpec spec) {
+    protected void updateChatClientRequest(ChatClientRequestSpec spec) {
       spec.system("You are a customer support agent for shipping, be polite and helper");
     }
   }
@@ -128,7 +128,7 @@ public class CustomerSupportAgent extends
     }
 
     @Override
-    protected void updateRequest(ChatClientRequestSpec spec) {
+    protected void updateChatClientRequest(ChatClientRequestSpec spec) {
       spec.system(
           "You are a customer support agent for general questions, be polite and helper");
     }
