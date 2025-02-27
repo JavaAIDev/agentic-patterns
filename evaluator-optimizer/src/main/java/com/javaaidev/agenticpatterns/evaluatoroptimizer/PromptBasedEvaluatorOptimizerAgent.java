@@ -30,8 +30,19 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     super(generationChatClient, evaluationChatClient, responseType, observationRegistry);
   }
 
+  /**
+   * Prompt template for the agent to generate initial result
+   *
+   * @return Prompt template
+   */
   protected abstract String getInitialResultPromptTemplate();
 
+  /**
+   * Prepare for the values of variables in the prompt template to generate initial result
+   *
+   * @param request Request
+   * @return Values of variables
+   */
   protected @Nullable Map<String, Object> buildInitialResultPromptContext(
       @Nullable Request request) {
     return new HashMap<>();
@@ -61,8 +72,19 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     return new GenerateInitialResultAgent(chatClient, responseType, observationRegistry);
   }
 
+  /**
+   * Prompt template for the agent to evaluate a result
+   *
+   * @return Prompt template
+   */
   protected abstract String getEvaluationPromptTemplate();
 
+  /**
+   * Prepare for the values of variables in the prompt template to evaluate a result
+   *
+   * @param response Response from a previous generation
+   * @return Values of variables
+   */
   protected @Nullable Map<String, Object> buildEvaluationPromptContext(
       @Nullable Response response) {
     return new HashMap<>();
@@ -92,8 +114,19 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     return new EvaluateAgent(chatClient, observationRegistry);
   }
 
+  /**
+   * Prompt template for the agent to optimize a result
+   *
+   * @return Prompt template
+   */
   protected abstract String getOptimizationPromptTemplate();
 
+  /**
+   * Prepare for the values of variables in the prompt template to optimize a result
+   *
+   * @param optimizationInput Input for optimization
+   * @return Values of variables
+   */
   protected @Nullable Map<String, Object> buildOptimizationPromptContext(
       @Nullable OptimizationInput<Response> optimizationInput) {
     return new HashMap<>();

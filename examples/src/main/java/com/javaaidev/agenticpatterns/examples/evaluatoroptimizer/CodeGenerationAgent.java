@@ -10,6 +10,9 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 
+/**
+ * An agent to generate code with evaluation feedbacks
+ */
 public class CodeGenerationAgent extends
     PromptBasedEvaluatorOptimizerAgent<CodeGenerationRequest, CodeGenerationResponse> {
 
