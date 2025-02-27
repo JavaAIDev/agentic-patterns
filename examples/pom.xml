@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.javaaidev</groupId>
     <artifactId>agentic-patterns</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
   </parent>
 
   <artifactId>agentic-patterns-examples</artifactId>
@@ -17,7 +17,6 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <agentic-patterns.version>0.1.1</agentic-patterns.version>
     <spring-ai.version>1.0.0-M5</spring-ai.version>
     <spring-boot.version>3.4.3</spring-boot.version>
   </properties>
@@ -52,27 +51,27 @@
     <dependency>
       <groupId>com.javaaidev</groupId>
       <artifactId>agentic-patterns-task-execution</artifactId>
-      <version>${agentic-patterns.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.javaaidev</groupId>
       <artifactId>agentic-patterns-evaluator-optimizer</artifactId>
-      <version>${agentic-patterns.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.javaaidev</groupId>
       <artifactId>agentic-patterns-parallelization-workflow</artifactId>
-      <version>${agentic-patterns.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.javaaidev</groupId>
       <artifactId>agentic-patterns-routing-workflow</artifactId>
-      <version>${agentic-patterns.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.javaaidev</groupId>
       <artifactId>agentic-patterns-chain-workflow</artifactId>
-      <version>${agentic-patterns.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.ai</groupId>
