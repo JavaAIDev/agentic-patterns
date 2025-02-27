@@ -1,17 +1,21 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.context.ContextExecutorService;
+import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.StructuredTaskScope;
-import java.util.concurrent.StructuredTaskScope.Subtask;
-import java.util.concurrent.StructuredTaskScope.Subtask.State;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,11 +35,30 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
 
   }
 
-  public record SubtaskContext<Request>(
-      SubtaskCreationRequest<Request> creationRequest,
-      @Nullable Subtask<?> job,
+  public record TaskExecutionContext(
+      Future<?> job,
+      Duration maxWaitTime,
       @Nullable Object result,
       @Nullable Throwable error
+  ) {
+
+    public TaskExecutionContext(Future<?> job, Duration maxWaitTime) {
+      this(job, maxWaitTime, null, null);
+    }
+
+    public TaskExecutionContext collectResult() {
+      try {
+        var result = job().get(maxWaitTime().toSeconds(), TimeUnit.SECONDS);
+        return new TaskExecutionContext(job(), maxWaitTime(), result, null);
+      } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        return new TaskExecutionContext(job(), maxWaitTime(), null, job().exceptionNow());
+      }
+    }
+  }
+
+  public record SubtaskContext<Request>(
+      SubtaskCreationRequest<Request> creationRequest,
+      @Nullable TaskExecutionContext taskExecutionContext
   ) {
 
     public static <Request, TaskRequest, TaskResponse> SubtaskContext<Request> create(String taskId,
@@ -46,26 +69,30 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
 
     public static <Request> SubtaskContext<Request> create(
         SubtaskCreationRequest<Request> creationRequest) {
-      return new SubtaskContext<>(creationRequest, null, null, null);
+      return new SubtaskContext<>(creationRequest, null);
     }
 
-    public SubtaskContext<Request> taskStarted(Subtask<?> job) {
-      return new SubtaskContext<>(this.creationRequest(), job, null,
-          null);
+    public SubtaskContext<Request> taskStarted(Future<?> job, Duration maxWaitTime) {
+      return new SubtaskContext<>(this.creationRequest(),
+          new TaskExecutionContext(job, maxWaitTime));
     }
 
     public SubtaskContext<Request> collectResult() {
-      if (this.job() == null) {
-        return this;
-      }
-      var state = this.job().state();
-      return new SubtaskContext<>(this.creationRequest(), this.job(),
-          state == State.SUCCESS ? this.job().get() : null,
-          state == State.FAILED ? this.job().exception() : null);
+      return new SubtaskContext<>(creationRequest(),
+          Objects.requireNonNull(taskExecutionContext(), "task execution context cannot be null")
+              .collectResult());
     }
 
     public String taskId() {
       return creationRequest().taskId();
+    }
+
+    public @Nullable Object result() {
+      return taskExecutionContext() != null ? taskExecutionContext().result() : null;
+    }
+
+    public @Nullable Throwable error() {
+      return taskExecutionContext() != null ? taskExecutionContext().error() : null;
     }
   }
 
@@ -90,7 +117,7 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     subtasks.add(SubtaskContext.create(taskId, subtask, requestTransformer));
   }
 
-  protected Duration getMaxExecutionDuration() {
+  protected Duration getMaxTaskExecutionDuration() {
     return Duration.ofMinutes(3);
   }
 
@@ -118,26 +145,28 @@ public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     }
   }
 
+  protected ExecutorService getTaskExecutorService() {
+    var executor = Executors.newThreadPerTaskExecutor(
+        Thread.ofVirtual().name("agent-task-", 1).factory());
+    return ContextExecutorService.wrap(executor,
+        ContextSnapshotFactory.builder().clearMissing(true).build());
+  }
+
   protected TaskExecutionResults runSubtasks(@Nullable Request request) {
     var createdTasks = createTasks(request);
     if (createdTasks != null) {
       subtasks.addAll(createdTasks.stream().map(SubtaskContext::create).toList());
     }
-    try (var scope = new StructuredTaskScope<>()) {
+    try (var executor = getTaskExecutorService()) {
       var jobs = subtasks.stream().map(context -> {
         var creationRequest = context.creationRequest();
         LOGGER.info("Starting subtask {}", creationRequest.taskId());
-        var job = scope.fork(
+        var job = executor.submit(
             () -> creationRequest.task().call(creationRequest.requestTransformer().apply(request)));
-        return context.taskStarted(job);
+        return context.taskStarted(job, getMaxTaskExecutionDuration());
       }).toList();
-      try {
-        LOGGER.info("Waiting for all subtasks to finish, timeout in {}", getMaxExecutionDuration());
-        scope.joinUntil(Instant.now().plus(getMaxExecutionDuration()));
-      } catch (InterruptedException | TimeoutException e) {
-        LOGGER.error("Error occurred when executing subtask, check status for individual subtask",
-            e);
-      }
+      LOGGER.info("Waiting for all subtasks to finish");
+      jobs.forEach(SubtaskContext::collectResult);
       LOGGER.info("All subtasks completed, assembling the results");
       var results = jobs.stream().map(SubtaskContext::collectResult)
           .collect(Collectors.toMap(SubtaskContext::taskId,
