@@ -58,7 +58,7 @@ public class AlgorithmArticleGenerationAgent extends
   }
 
   @Override
-  protected @Nullable List<SubtaskCreationRequest<AlgorithmArticleGenerationRequest>> createTasks(
+  protected List<SubtaskCreationRequest<AlgorithmArticleGenerationRequest>> createTasks(
       @Nullable AlgorithmArticleGenerationRequest request) {
     var languages = AgentUtils.safeGet(request,
         AlgorithmArticleGenerationRequest::languages, List.<String>of());

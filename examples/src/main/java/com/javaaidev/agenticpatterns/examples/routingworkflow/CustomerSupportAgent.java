@@ -3,6 +3,7 @@ package com.javaaidev.agenticpatterns.examples.routingworkflow;
 import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportRequest;
 import com.javaaidev.agenticpatterns.examples.routingworkflow.CustomerSupportAgent.CustomerSupportResponse;
+import com.javaaidev.agenticpatterns.routingworkflow.RoutingChoice;
 import com.javaaidev.agenticpatterns.routingworkflow.RoutingWorkflowAgent;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
@@ -37,7 +38,7 @@ public class CustomerSupportAgent extends
   }
 
   @Override
-  protected String formatRequest(@Nullable CustomerSupportRequest request) {
+  protected String formatRoutingInput(@Nullable CustomerSupportRequest request) {
     return AgentUtils.safeGet(request, CustomerSupportRequest::question, "");
   }
 

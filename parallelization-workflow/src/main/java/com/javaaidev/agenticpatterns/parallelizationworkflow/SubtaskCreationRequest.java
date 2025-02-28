@@ -8,7 +8,7 @@ import java.util.function.Function;
  *
  * @param taskId             Task id
  * @param task               Task, see {@linkplain TaskExecutionAgent}
- * @param requestTransformer Transform request to task inpu
+ * @param requestTransformer Transform request to task input
  * @param <Request>          Request type
  */
 public record SubtaskCreationRequest<Request>(

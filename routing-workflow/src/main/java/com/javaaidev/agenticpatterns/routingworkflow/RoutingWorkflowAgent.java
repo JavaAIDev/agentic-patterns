@@ -4,7 +4,6 @@ import com.javaaidev.agenticpatterns.core.AgentExecutionException;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,6 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
+/**
+ * Routing Workflow agent, refer to <a
+ * href="https://javaaidev.com/docs/agentic-patterns/patterns/routing-workflow">doc</a>
+ *
+ * @param <Request>  Task input type
+ * @param <Response> Task output type
+ */
 public abstract class RoutingWorkflowAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {
 
@@ -36,20 +42,11 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
     routingAgent = new RoutingAgent(chatClient);
   }
 
-  public record RoutingChoice<Request, Response>(String name, String description,
-                                                 TaskExecutionAgent<Request, Response> agent) {
-
-  }
-
-  public record RoutingRequest<Request, Response>(Request request,
-                                                  List<RoutingChoice<Request, Response>> choices) {
-
-  }
-
-  public record RoutingResponse(String name, String reason) {
-
-  }
-
+  /**
+   * Add a new routing choice
+   *
+   * @param routingChoice Routing choice
+   */
   protected void addRoutingChoice(RoutingChoice<Request, Response> routingChoice) {
     routingChoices.add(routingChoice);
   }
@@ -59,9 +56,14 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
     return "";
   }
 
+  /**
+   * Get the prompt template for routing
+   *
+   * @return Prompt template
+   */
   protected String getRoutingPromptTemplate() {
     return """
-        Goal: Select the best target to handle the input
+        Goal: Select the best target to handle the input from a list of choices
         
         Choices:
         {choices}
@@ -71,10 +73,22 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
         """;
   }
 
-  protected String formatRequest(@Nullable Request request) {
+  /**
+   * Generate the input used by the default prompt template
+   *
+   * @param request Request
+   * @return Input for routing prompt template
+   */
+  protected String formatRoutingInput(@Nullable Request request) {
     return Objects.toString(request, "");
   }
 
+  /**
+   * Get values of variables used in the default prompt template
+   *
+   * @param routingRequest Routing request
+   * @return Values of variables
+   */
   protected @Nullable Map<String, Object> getRoutingPromptContext(
       @Nullable RoutingRequest<Request, Response> routingRequest) {
     Assert.notNull(routingRequest, "routing request cannot be null");
@@ -83,7 +97,7 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
         .collect(Collectors.joining("\n"));
     return Map.of(
         "choices", choices,
-        "input", formatRequest(routingRequest.request())
+        "input", formatRoutingInput(routingRequest.request())
     );
   }
 
@@ -105,7 +119,11 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
     return targetAgent.call(request);
   }
 
-  protected class RoutingAgent extends TaskExecutionAgent<RoutingRequest, RoutingResponse> {
+  /**
+   * Agent for the routing
+   */
+  protected class RoutingAgent extends
+      TaskExecutionAgent<RoutingRequest<Request, Response>, RoutingResponse> {
 
     protected RoutingAgent(ChatClient chatClient) {
       super(chatClient);
@@ -118,7 +136,7 @@ public abstract class RoutingWorkflowAgent<Request, Response> extends
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable RoutingRequest routingRequest) {
+        @Nullable RoutingRequest<Request, Response> routingRequest) {
       return getRoutingPromptContext(routingRequest);
     }
   }
