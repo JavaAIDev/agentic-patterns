@@ -8,7 +8,14 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.core.Ordered;
 
-public abstract class ChainStepAgent<Req, Res> extends TaskExecutionAgent<Req, Res> implements
+/**
+ * A step in the chain
+ *
+ * @param <Request>  Task input type
+ * @param <Response> Task output type
+ */
+public abstract class ChainStepAgent<Request, Response> extends
+    TaskExecutionAgent<Request, Response> implements
     Ordered {
 
   protected ChainStepAgent(ChatClient chatClient,
@@ -22,6 +29,14 @@ public abstract class ChainStepAgent<Req, Res> extends TaskExecutionAgent<Req, R
     super(chatClient, responseType, observationRegistry);
   }
 
-  protected abstract Res call(Req request, Map<String, Object> context,
-      WorkflowChain<Req, Res> chain);
+  /**
+   * Call the current step
+   *
+   * @param request Task input
+   * @param context Shared context between different steps
+   * @param chain   The chain, see {@linkplain WorkflowChain}
+   * @return Task output
+   */
+  protected abstract Response call(Request request, Map<String, Object> context,
+      WorkflowChain<Request, Response> chain);
 }

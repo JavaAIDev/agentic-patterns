@@ -10,6 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.OrderComparator;
 
+/**
+ * Chain to manage steps
+ *
+ * @param <Request>  Task input type
+ * @param <Response> Task output type
+ */
 public class WorkflowChain<Request, Response> {
 
   private final Deque<ChainStepAgent<Request, Response>> agents;
@@ -22,6 +28,13 @@ public class WorkflowChain<Request, Response> {
     LOGGER.info("Added {} agents to the chain", this.agents.size());
   }
 
+  /**
+   * Call next step in the chain
+   *
+   * @param request      Task input
+   * @param lastResponse Last task output
+   * @return Task output
+   */
   public Response callNext(Request request, @Nullable Response lastResponse) {
     if (agents.isEmpty()) {
       return lastResponse;

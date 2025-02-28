@@ -72,10 +72,10 @@ public class ArticleWritingAgent extends
     }
 
     @Override
-    protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable ArticleWritingRequest articleWritingRequest) {
+    protected Map<String, Object> getPromptContext(
+        @Nullable ArticleWritingRequest request) {
       return Map.of(
-          "topic", AgentUtils.safeGet(articleWritingRequest, ArticleWritingRequest::topic, "")
+          "topic", AgentUtils.safeGet(request, ArticleWritingRequest::topic, "")
       );
     }
   }
@@ -153,12 +153,12 @@ public class ArticleWritingAgent extends
     }
 
     @Override
-    protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable ArticleImprovementRequest articleImprovementRequest) {
+    protected Map<String, Object> getPromptContext(
+        @Nullable ArticleImprovementRequest request) {
       return Map.of(
           "instruction", instruction,
           "article",
-          AgentUtils.safeGet(articleImprovementRequest, ArticleImprovementRequest::article, "")
+          AgentUtils.safeGet(request, ArticleImprovementRequest::article, "")
       );
     }
 

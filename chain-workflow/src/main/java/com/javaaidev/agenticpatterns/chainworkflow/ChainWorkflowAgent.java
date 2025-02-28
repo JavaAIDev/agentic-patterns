@@ -3,15 +3,21 @@ package com.javaaidev.agenticpatterns.chainworkflow;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 
+/**
+ * Chain Workflow agent, refer to <a
+ * href="https://javaaidev.com/docs/agentic-patterns/patterns/chain-workflow">doc</a>
+ *
+ * @param <Request>  Task input type
+ * @param <Response> Task output type
+ */
 public class ChainWorkflowAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {
 
-  private final List<ChainStepAgent<Request, Response>> stepAgents = new ArrayList<>();
+  private final CopyOnWriteArrayList<ChainStepAgent<Request, Response>> stepAgents = new CopyOnWriteArrayList<>();
 
   protected ChainWorkflowAgent(
       ChatClient chatClient,
@@ -26,6 +32,11 @@ public class ChainWorkflowAgent<Request, Response> extends
     super(chatClient, responseType, observationRegistry);
   }
 
+  /**
+   * Add a step in the chain
+   *
+   * @param stepAgent A step in the chain
+   */
   public void addStep(ChainStepAgent<Request, Response> stepAgent) {
     stepAgents.add(stepAgent);
   }

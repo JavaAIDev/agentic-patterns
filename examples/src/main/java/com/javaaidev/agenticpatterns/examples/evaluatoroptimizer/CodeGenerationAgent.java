@@ -29,9 +29,9 @@ public class CodeGenerationAgent extends
 
   @Override
   protected @Nullable Map<String, Object> buildInitialResultPromptContext(
-      @Nullable CodeGenerationRequest codeGenerationRequest) {
+      @Nullable CodeGenerationRequest request) {
     return Map.of("input",
-        AgentUtils.safeGet(codeGenerationRequest, CodeGenerationRequest::input, ""));
+        AgentUtils.safeGet(request, CodeGenerationRequest::input, ""));
   }
 
   @Override

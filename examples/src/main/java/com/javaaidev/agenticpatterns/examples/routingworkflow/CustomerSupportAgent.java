@@ -13,16 +13,19 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 
+/**
+ * A routing workflow agent for customer support
+ */
 public class CustomerSupportAgent extends
     RoutingWorkflowAgent<CustomerSupportRequest, CustomerSupportResponse> {
 
-  protected CustomerSupportAgent(ChatClient chatClient,
+  public CustomerSupportAgent(ChatClient chatClient,
       @Nullable Type responseType, @Nullable ObservationRegistry observationRegistry) {
     super(chatClient, responseType, observationRegistry);
     initRoutes();
   }
 
-  protected CustomerSupportAgent(ChatClient chatClient,
+  public CustomerSupportAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
     super(chatClient, observationRegistry);
     initRoutes();
@@ -65,10 +68,10 @@ public class CustomerSupportAgent extends
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable CustomerSupportRequest customerSupportRequest) {
+        @Nullable CustomerSupportRequest request) {
       return Map.of(
           "question",
-          AgentUtils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          AgentUtils.safeGet(request, CustomerSupportRequest::question, "")
       );
     }
 
@@ -92,11 +95,11 @@ public class CustomerSupportAgent extends
     }
 
     @Override
-    protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable CustomerSupportRequest customerSupportRequest) {
+    protected Map<String, Object> getPromptContext(
+        @Nullable CustomerSupportRequest request) {
       return Map.of(
           "question",
-          AgentUtils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          AgentUtils.safeGet(request, CustomerSupportRequest::question, "")
       );
     }
 
@@ -121,10 +124,10 @@ public class CustomerSupportAgent extends
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable CustomerSupportRequest customerSupportRequest) {
+        @Nullable CustomerSupportRequest request) {
       return Map.of(
           "question",
-          AgentUtils.safeGet(customerSupportRequest, CustomerSupportRequest::question, "")
+          AgentUtils.safeGet(request, CustomerSupportRequest::question, "")
       );
     }
 
