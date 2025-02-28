@@ -11,6 +11,7 @@
 
   <artifactId>agentic-patterns-evaluator-optimizer</artifactId>
   <name>Agentic Patterns :: Evaluator-Optimizer</name>
+  <description>Evaluator-Optimizer agent</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>

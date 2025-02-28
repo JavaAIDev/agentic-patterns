@@ -6,3 +6,8 @@
 Reference implementation of [Agentic Patterns](https://javaaidev.com/docs/agentic-patterns/intro/)
 
 This reference implementation is designed to be reusable.
+
+Requirements:
+
+- Java 21
+- Spring AI 

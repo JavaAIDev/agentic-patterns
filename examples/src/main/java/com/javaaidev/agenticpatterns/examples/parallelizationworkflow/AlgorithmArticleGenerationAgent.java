@@ -6,6 +6,8 @@ import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmA
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationResponse;
 import com.javaaidev.agenticpatterns.parallelizationworkflow.PromptBasedAssembling;
+import com.javaaidev.agenticpatterns.parallelizationworkflow.SubtaskCreationRequest;
+import com.javaaidev.agenticpatterns.parallelizationworkflow.TaskExecutionResults;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class AlgorithmArticleGenerationAgent extends
   }
 
   @Override
-  protected @Nullable Map<String, Object> getParentPromptContext(
+  protected @Nullable Map<String, Object> getRequestPromptContext(
       @Nullable AlgorithmArticleGenerationRequest request) {
     return Map.of("algorithm",
         AgentUtils.safeGet(request, AlgorithmArticleGenerationRequest::algorithm, ""));

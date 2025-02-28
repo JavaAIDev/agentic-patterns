@@ -11,6 +11,7 @@
 
   <artifactId>agentic-patterns-parallelization-workflow</artifactId>
   <name>Agentic Patterns :: Parallelization Workflow</name>
+  <description>Parallelization Workflow agent</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>

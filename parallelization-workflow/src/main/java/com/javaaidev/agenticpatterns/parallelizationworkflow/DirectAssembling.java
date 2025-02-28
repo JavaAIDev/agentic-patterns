@@ -9,8 +9,8 @@ import org.springframework.ai.chat.client.ChatClient;
  * A {@linkplain ParallelizationWorkflowAgent} which directly assembles subtask execution results
  * without using LLM
  *
- * @param <Request>
- * @param <Response>
+ * @param <Request>  Task input type
+ * @param <Response> Task output type
  */
 public abstract class DirectAssembling<Request, Response> extends
     ParallelizationWorkflowAgent<Request, Response> {
