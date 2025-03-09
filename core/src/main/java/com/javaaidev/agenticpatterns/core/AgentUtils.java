@@ -1,6 +1,7 @@
 package com.javaaidev.agenticpatterns.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
@@ -41,11 +42,27 @@ public class AgentUtils {
     return Optional.ofNullable(obj).map(extractor).orElse(defaultValue);
   }
 
-  public static String toJson(Object input) {
+  public static String toJson(@Nullable Object input) {
+    if (input == null) {
+      return "{}";
+    }
     try {
       return objectMapper.writeValueAsString(input);
     } catch (JsonProcessingException e) {
       return "{}";
+    }
+  }
+
+  public static Map<String, Object> objectToMap(@Nullable Object object) {
+    if (object == null) {
+      return new HashMap<>();
+    }
+    var json = toJson(object);
+    try {
+      return objectMapper.readValue(json, new TypeReference<>() {
+      });
+    } catch (JsonProcessingException e) {
+      return new HashMap<>();
     }
   }
 }

@@ -30,8 +30,7 @@ public class CodeGenerationAgent extends
   @Override
   protected @Nullable Map<String, Object> buildInitialResultPromptContext(
       @Nullable CodeGenerationRequest request) {
-    return Map.of("input",
-        AgentUtils.safeGet(request, CodeGenerationRequest::input, ""));
+    return AgentUtils.objectToMap(request);
   }
 
   @Override
@@ -43,8 +42,7 @@ public class CodeGenerationAgent extends
   @Override
   protected @Nullable Map<String, Object> buildEvaluationPromptContext(
       @Nullable CodeGenerationResponse codeGenerationResponse) {
-    return Map.of("code",
-        AgentUtils.safeGet(codeGenerationResponse, CodeGenerationResponse::code, ""));
+    return AgentUtils.objectToMap(codeGenerationResponse);
   }
 
   @Override

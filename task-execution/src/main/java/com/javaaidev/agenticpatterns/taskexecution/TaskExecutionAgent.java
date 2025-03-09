@@ -2,6 +2,7 @@ package com.javaaidev.agenticpatterns.taskexecution;
 
 import com.javaaidev.agenticpatterns.core.Agent;
 import com.javaaidev.agenticpatterns.core.AgentExecutionException;
+import com.javaaidev.agenticpatterns.core.AgentUtils;
 import com.javaaidev.agenticpatterns.core.TypeResolver;
 import com.javaaidev.agenticpatterns.core.observation.AgentExecutionObservationContext;
 import com.javaaidev.agenticpatterns.core.observation.AgentExecutionObservationDocumentation;
@@ -66,7 +67,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
    */
   @Nullable
   protected Map<String, Object> getPromptContext(@Nullable Request request) {
-    return new HashMap<>();
+    return AgentUtils.objectToMap(request);
   }
 
   /**
