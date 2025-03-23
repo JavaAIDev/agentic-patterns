@@ -9,5 +9,5 @@ This reference implementation is designed to be reusable.
 
 Requirements:
 
-- Java 21
+- Java 21 (for virtual threads)
 - Spring AI 

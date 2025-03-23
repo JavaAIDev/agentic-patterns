@@ -15,7 +15,7 @@ public class RestAPITestCaseGenerationAgent extends
   @Override
   protected String getPromptTemplate() {
     return """
-        Goal: Write Python code to test a REST API.
+        Goal: Write JavaScript code to test a REST API.
         
         Requirements:
         - The API is responsible for creating a new user.
