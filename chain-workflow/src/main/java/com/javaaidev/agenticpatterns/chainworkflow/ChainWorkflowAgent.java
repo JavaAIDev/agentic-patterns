@@ -11,8 +11,8 @@ import org.springframework.ai.chat.client.ChatClient;
  * Chain Workflow agent, refer to <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/chain-workflow">doc</a>
  *
- * @param <Request>  Task input type
- * @param <Response> Task output type
+ * @param <Request>  Type of agent input
+ * @param <Response> Type of agent output
  */
 public class ChainWorkflowAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {

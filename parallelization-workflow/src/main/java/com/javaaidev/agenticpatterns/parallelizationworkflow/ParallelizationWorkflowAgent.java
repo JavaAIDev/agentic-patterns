@@ -21,8 +21,8 @@ import org.springframework.ai.chat.client.ChatClient;
  * Parallelization Workflow agent, refer to <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/parallelization-workflow">doc</a>
  *
- * @param <Request>
- * @param <Response>
+ * @param <Request>  Type of agent input
+ * @param <Response> Type of agent output
  */
 public abstract class ParallelizationWorkflowAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> {

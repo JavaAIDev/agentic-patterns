@@ -28,12 +28,7 @@ public class SampleCodeGenerationAgent extends
   @Override
   protected @Nullable Map<String, Object> getPromptContext(
       @Nullable SampleCodeGenerationRequest request) {
-    return Map.of(
-        "language",
-        AgentUtils.safeGet(request, SampleCodeGenerationRequest::language, "java"),
-        "description",
-        AgentUtils.safeGet(request, SampleCodeGenerationRequest::description, "")
-    );
+    return AgentUtils.objectToMap(request);
   }
 
   public record SampleCodeGenerationRequest(String language, String description) {

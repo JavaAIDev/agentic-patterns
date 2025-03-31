@@ -41,8 +41,7 @@ public class AlgorithmArticleGenerationAgent extends
   @Override
   protected @Nullable Map<String, Object> getRequestPromptContext(
       @Nullable AlgorithmArticleGenerationRequest request) {
-    return Map.of("algorithm",
-        AgentUtils.safeGet(request, AlgorithmArticleGenerationRequest::algorithm, ""));
+    return AgentUtils.objectToMap(request);
   }
 
   @Override

@@ -13,8 +13,8 @@ import org.springframework.ai.chat.client.ChatClient;
  * Evaluator-Optimizer Agent, refer to the <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/evaluator-optimizer">pattern</a>
  *
- * @param <Request>
- * @param <Response>
+ * @param <Request>  Type of agent input
+ * @param <Response> Type of agent output
  */
 public abstract class EvaluatorOptimizerAgent<Request, Response> extends
     NoLLMTaskExecutionAgent<Request, Response> {

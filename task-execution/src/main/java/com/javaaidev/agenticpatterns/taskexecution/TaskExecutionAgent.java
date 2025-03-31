@@ -23,8 +23,8 @@ import org.springframework.core.ParameterizedTypeReference;
  * Task Execution Agent, refer to the <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/task-execution">pattern</a>
  *
- * @param <Request>  Type of task input
- * @param <Response> Type of task output
+ * @param <Request>  Type of agent input
+ * @param <Response> Type of agent output
  */
 public abstract class TaskExecutionAgent<Request, Response> extends Agent implements
     Function<Request, Response> {
