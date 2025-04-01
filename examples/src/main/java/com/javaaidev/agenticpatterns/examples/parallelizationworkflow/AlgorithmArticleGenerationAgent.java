@@ -1,8 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.parallelizationworkflow;
 
 import com.javaaidev.agenticpatterns.core.AgentUtils;
-import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationRequest;
-import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.AlgorithmArticleGenerationAgent.AlgorithmArticleGenerationResponse;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.parallelizationworkflow.SampleCodeGenerationAgent.SampleCodeGenerationResponse;
 import com.javaaidev.agenticpatterns.parallelizationworkflow.PromptBasedAssembling;
@@ -73,11 +71,4 @@ public class AlgorithmArticleGenerationAgent extends
 
   }
 
-  public record AlgorithmArticleGenerationRequest(String algorithm, List<String> languages) {
-
-  }
-
-  public record AlgorithmArticleGenerationResponse(String article) {
-
-  }
 }
