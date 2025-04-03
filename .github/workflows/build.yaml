@@ -21,4 +21,4 @@ jobs:
       - name: Build with Maven
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: mvn --batch-mode --update-snapshots package
+        run: mvn -B -ntp package
