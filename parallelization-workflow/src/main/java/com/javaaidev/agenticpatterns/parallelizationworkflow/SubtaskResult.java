@@ -10,10 +10,20 @@ import org.jspecify.annotations.Nullable;
  */
 public record SubtaskResult(@Nullable Object result, @Nullable Throwable error) {
 
+  /**
+   * Has successful result
+   *
+   * @return
+   */
   public boolean hasResult() {
     return result() != null;
   }
 
+  /**
+   * Has error
+   *
+   * @return
+   */
   public boolean hasError() {
     return error() != null;
   }

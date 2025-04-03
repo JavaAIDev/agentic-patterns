@@ -43,7 +43,7 @@ public abstract class DirectAssembling<Request, Response> extends
   /**
    * Assemble subtask execution results into the response
    *
-   * @param results Results of subtask execution
+   * @param results Results of subtask execution, see {@linkplain TaskExecutionResults}
    * @return Response
    */
   protected abstract Response assemble(TaskExecutionResults results);

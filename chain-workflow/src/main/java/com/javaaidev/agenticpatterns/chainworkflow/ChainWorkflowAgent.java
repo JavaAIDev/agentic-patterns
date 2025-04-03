@@ -1,11 +1,10 @@
 package com.javaaidev.agenticpatterns.chainworkflow;
 
-import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import com.javaaidev.agenticpatterns.taskexecution.NoLLMTaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.jspecify.annotations.Nullable;
-import org.springframework.ai.chat.client.ChatClient;
 
 /**
  * Chain Workflow agent, refer to <a
@@ -15,21 +14,19 @@ import org.springframework.ai.chat.client.ChatClient;
  * @param <Response> Type of agent output
  */
 public class ChainWorkflowAgent<Request, Response> extends
-    TaskExecutionAgent<Request, Response> {
+    NoLLMTaskExecutionAgent<Request, Response> {
 
   private final CopyOnWriteArrayList<ChainStepAgent<Request, Response>> stepAgents = new CopyOnWriteArrayList<>();
 
   protected ChainWorkflowAgent(
-      ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
-    super(chatClient, null, observationRegistry);
+    super(null, observationRegistry);
   }
 
   public ChainWorkflowAgent(
-      ChatClient chatClient,
       @Nullable Type responseType,
       @Nullable ObservationRegistry observationRegistry) {
-    super(chatClient, responseType, observationRegistry);
+    super(responseType, observationRegistry);
   }
 
   /**
@@ -49,10 +46,5 @@ public class ChainWorkflowAgent<Request, Response> extends
   private Response doCall(@Nullable Request request) {
     var chain = new WorkflowChain<>(stepAgents);
     return chain.callNext(request, null);
-  }
-
-  @Override
-  protected String getPromptTemplate() {
-    return "";
   }
 }

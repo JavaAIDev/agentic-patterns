@@ -87,7 +87,8 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
     return instrumentedCall(request, this::doCall);
   }
 
-  protected Response instrumentedCall(Request request, Function<Request, Response> action) {
+  protected Response instrumentedCall(@Nullable Request request,
+      Function<Request, Response> action) {
     if (observationRegistry == null) {
       return action.apply(request);
     }
