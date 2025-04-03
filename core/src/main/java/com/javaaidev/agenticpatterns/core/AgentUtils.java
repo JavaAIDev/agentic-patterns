@@ -18,6 +18,12 @@ public class AgentUtils {
   private static final ObjectMapper objectMapper = new ObjectMapper().enable(
       SerializationFeature.INDENT_OUTPUT);
 
+  /**
+   * Load prompt template from classpath by name
+   *
+   * @param resource Resource name
+   * @return Template content
+   */
   public static String loadPromptTemplateFromClasspath(String resource) {
     try {
       return new ClassPathResource(resource).getContentAsString(StandardCharsets.UTF_8);
@@ -26,6 +32,13 @@ public class AgentUtils {
     }
   }
 
+  /**
+   * Merge two maps into one map
+   *
+   * @param map1 First map
+   * @param map2 Second map
+   * @return Merged map
+   */
   public static Map<String, Object> mergeMap(@Nullable Map<String, Object> map1,
       @Nullable Map<String, Object> map2) {
     var m1 = Optional.ofNullable(map1)
@@ -42,6 +55,12 @@ public class AgentUtils {
     return Optional.ofNullable(obj).map(extractor).orElse(defaultValue);
   }
 
+  /**
+   * Get JSON content of an object
+   *
+   * @param input object
+   * @return JSON string
+   */
   public static String toJson(@Nullable Object input) {
     if (input == null) {
       return "{}";
@@ -53,6 +72,12 @@ public class AgentUtils {
     }
   }
 
+  /**
+   * Convert an object into a map using Jackson ObjectMapper
+   *
+   * @param object Object
+   * @return Map
+   */
   public static Map<String, Object> objectToMap(@Nullable Object object) {
     if (object == null) {
       return new HashMap<>();
