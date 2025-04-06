@@ -1,6 +1,7 @@
 package com.javaaidev.agenticpatterns.routingworkflow;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Routing request
@@ -10,7 +11,8 @@ import java.util.List;
  * @param <Request>  Task input type
  * @param <Response> Task output type
  */
-public record RoutingRequest<Request, Response>(Request request,
-                                                List<RoutingChoice<Request, Response>> choices) {
+public record RoutingRequest<Request, Response>(
+    @Nullable Request request,
+    List<RoutingChoice<Request, Response>> choices) {
 
 }

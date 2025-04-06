@@ -8,7 +8,6 @@ import com.javaaidev.agenticpatterns.routingworkflow.RoutingWorkflowAgent;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
-import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
@@ -67,15 +66,6 @@ public class CustomerSupportAgent extends
     }
 
     @Override
-    protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable CustomerSupportRequest request) {
-      return Map.of(
-          "question",
-          AgentUtils.safeGet(request, CustomerSupportRequest::question, "")
-      );
-    }
-
-    @Override
     protected void updateChatClientRequest(ChatClientRequestSpec spec) {
       spec.system("You are a customer support agent for payment, be polite and helpful");
     }
@@ -95,15 +85,6 @@ public class CustomerSupportAgent extends
     }
 
     @Override
-    protected Map<String, Object> getPromptContext(
-        @Nullable CustomerSupportRequest request) {
-      return Map.of(
-          "question",
-          AgentUtils.safeGet(request, CustomerSupportRequest::question, "")
-      );
-    }
-
-    @Override
     protected void updateChatClientRequest(ChatClientRequestSpec spec) {
       spec.system("You are a customer support agent for shipping, be polite and helpful");
     }
@@ -120,15 +101,6 @@ public class CustomerSupportAgent extends
     @Override
     protected String getPromptTemplate() {
       return "{question}";
-    }
-
-    @Override
-    protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable CustomerSupportRequest request) {
-      return Map.of(
-          "question",
-          AgentUtils.safeGet(request, CustomerSupportRequest::question, "")
-      );
     }
 
     @Override

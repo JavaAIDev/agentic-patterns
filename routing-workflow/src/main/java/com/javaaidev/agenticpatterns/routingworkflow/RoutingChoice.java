@@ -11,8 +11,9 @@ import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
  * @param <Request>   Task input type
  * @param <Response>  Task output type
  */
-public record RoutingChoice<Request, Response>(String name,
-                                               String description,
-                                               TaskExecutionAgent<Request, Response> agent) {
+public record RoutingChoice<Request, Response>(
+    String name,
+    String description,
+    TaskExecutionAgent<Request, Response> agent) {
 
 }

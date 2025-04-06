@@ -1,6 +1,5 @@
 services:
 
-  # And put them in an OTEL collector pipeline...
   otel-collector:
     image: otel/opentelemetry-collector:0.97.0
     command: [ "--config=/etc/otel-collector.yaml" ]
@@ -9,7 +8,6 @@ services:
     ports:
       - "4318:4318"
 
-  # To eventually offload to Tempo...
   tempo:
     image: grafana/tempo:main-13885de
     command: [ "-config.file=/etc/tempo.yaml" ]
