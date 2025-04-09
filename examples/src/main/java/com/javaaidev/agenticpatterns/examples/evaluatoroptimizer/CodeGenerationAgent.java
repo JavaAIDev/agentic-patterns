@@ -1,6 +1,8 @@
 package com.javaaidev.agenticpatterns.examples.evaluatoroptimizer;
 
 import com.javaaidev.agenticpatterns.core.AgentUtils;
+import com.javaaidev.agenticpatterns.evaluatoroptimizer.NoopFinalizationStep;
+import com.javaaidev.agenticpatterns.evaluatoroptimizer.NoopInitializationStep;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.PromptBasedEvaluatorOptimizerAgent;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationAgent.CodeGenerationResponse;
@@ -14,11 +16,12 @@ import org.springframework.ai.chat.client.ChatClient;
  * An agent to generate code with evaluation feedbacks
  */
 public class CodeGenerationAgent extends
-    PromptBasedEvaluatorOptimizerAgent<CodeGenerationRequest, CodeGenerationResponse> {
+    PromptBasedEvaluatorOptimizerAgent<CodeGenerationRequest, CodeGenerationResponse, CodeGenerationResponse> {
 
   public CodeGenerationAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
-    super(chatClient, chatClient, CodeGenerationResponse.class, observationRegistry);
+    super(chatClient, chatClient, CodeGenerationResponse.class, observationRegistry,
+        new NoopInitializationStep<>(), new NoopFinalizationStep<>());
   }
 
   @Override
@@ -56,7 +59,7 @@ public class CodeGenerationAgent extends
       @Nullable OptimizationInput<CodeGenerationResponse> optimizationInput) {
     var optionalInput = Optional.ofNullable(optimizationInput);
     return Map.of(
-        "code", optionalInput.map(input -> input.response().code()),
+        "code", optionalInput.map(input -> input.result().code()),
         "feedback", optionalInput.map(input -> input.evaluation().feedback())
     );
   }

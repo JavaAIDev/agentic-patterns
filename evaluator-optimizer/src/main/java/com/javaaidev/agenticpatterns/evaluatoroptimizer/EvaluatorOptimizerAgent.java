@@ -14,30 +14,43 @@ import org.springframework.ai.chat.client.ChatClient;
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/evaluator-optimizer">pattern</a>
  *
  * @param <Request>  Type of agent input
+ * @param <Result>   Type of intermediate result
  * @param <Response> Type of agent output
  */
-public abstract class EvaluatorOptimizerAgent<Request, Response> extends
+public abstract class EvaluatorOptimizerAgent<Request, Result, Response> extends
     NoLLMTaskExecutionAgent<Request, Response> {
 
   protected ChatClient generationChatClient;
   protected ChatClient evaluationChatClient;
+  @Nullable
+  private final InitializationStep<Request> initializationStep;
+  private final FinalizationStep<Request, Result, Response> finalizationStep;
 
   protected EvaluatorOptimizerAgent(ChatClient generationChatClient,
-      ChatClient evaluationChatClient) {
-    this(generationChatClient, evaluationChatClient, null, null);
-  }
-
-  public EvaluatorOptimizerAgent(ChatClient generationChatClient,
-      ChatClient evaluationChatClient, @Nullable ObservationRegistry observationRegistry) {
-    this(generationChatClient, evaluationChatClient, null, observationRegistry);
+      ChatClient evaluationChatClient,
+      FinalizationStep<Request, Result, Response> finalizationStep) {
+    this(generationChatClient, evaluationChatClient, null, null, null, finalizationStep);
   }
 
   protected EvaluatorOptimizerAgent(ChatClient generationChatClient,
-      ChatClient evaluationChatClient, @Nullable Type responseType,
-      @Nullable ObservationRegistry observationRegistry) {
+      ChatClient evaluationChatClient,
+      @Nullable ObservationRegistry observationRegistry,
+      FinalizationStep<Request, Result, Response> finalizationStep) {
+    this(generationChatClient, evaluationChatClient, null, observationRegistry, null,
+        finalizationStep);
+  }
+
+  protected EvaluatorOptimizerAgent(ChatClient generationChatClient,
+      ChatClient evaluationChatClient,
+      @Nullable Type responseType,
+      @Nullable ObservationRegistry observationRegistry,
+      @Nullable InitializationStep<Request> initializationStep,
+      FinalizationStep<Request, Result, Response> finalizationStep) {
     super(responseType, observationRegistry);
     this.generationChatClient = generationChatClient;
     this.evaluationChatClient = evaluationChatClient;
+    this.initializationStep = initializationStep;
+    this.finalizationStep = finalizationStep;
     initAgents();
   }
 
@@ -47,11 +60,11 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> extends
     optimizationAgent = buildOptimizationAgent(generationChatClient, observationRegistry);
   }
 
-  protected TaskExecutionAgent<Request, Response> initialResultAgent;
+  protected TaskExecutionAgent<Request, Result> initialResultAgent;
   @Nullable
-  protected TaskExecutionAgent<Response, Evaluation> evaluationAgent;
+  protected TaskExecutionAgent<Result, Evaluation> evaluationAgent;
   @Nullable
-  protected TaskExecutionAgent<OptimizationInput<Response>, Response> optimizationAgent;
+  protected TaskExecutionAgent<OptimizationInput<Result>, Result> optimizationAgent;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EvaluatorOptimizerAgent.class);
 
@@ -69,7 +82,7 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> extends
    *
    * @return the agent, see {@linkplain TaskExecutionAgent}
    */
-  protected abstract TaskExecutionAgent<Request, Response> buildInitialResultAgent(
+  protected abstract TaskExecutionAgent<Request, Result> buildInitialResultAgent(
       ChatClient chatClient, @Nullable ObservationRegistry observationRegistry);
 
   /**
@@ -77,7 +90,7 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> extends
    *
    * @return the agent, see {@linkplain TaskExecutionAgent}
    */
-  protected abstract TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent(
+  protected abstract TaskExecutionAgent<Result, Evaluation> buildEvaluationAgent(
       ChatClient chatClient, @Nullable ObservationRegistry observationRegistry);
 
   /**
@@ -85,7 +98,7 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> extends
    *
    * @return the agent, see {@linkplain TaskExecutionAgent}
    */
-  protected abstract TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent(
+  protected abstract TaskExecutionAgent<OptimizationInput<Result>, Result> buildOptimizationAgent(
       ChatClient chatClient, @Nullable ObservationRegistry observationRegistry);
 
   @Override
@@ -93,30 +106,34 @@ public abstract class EvaluatorOptimizerAgent<Request, Response> extends
     return instrumentedCall(request, this::doCall);
   }
 
-  private Response doCall(@Nullable Request request) {
+  private Response doCall(@Nullable Request originalRequest) {
+    var request = originalRequest;
+    if (initializationStep != null) {
+      request = initializationStep.initialize(originalRequest);
+    }
     var initialResult = initialResultAgent.call(request);
     if (evaluationAgent == null || optimizationAgent == null) {
-      return initialResult;
+      return finalizationStep.finalize(request, initialResult);
     }
     int iteration = 0;
-    Response result = initialResult;
+    Result result = initialResult;
     Evaluation evaluation;
     do {
       LOGGER.info("Begin evaluation #{}", iteration);
       evaluation = evaluationAgent.call(result);
       if (evaluation.passed()) {
         LOGGER.info("Evaluation passed in #{}", iteration);
-        return result;
+        break;
       }
       LOGGER.info("Begin optimization #{}", iteration);
       result = optimizationAgent.call(new OptimizationInput<>(result, evaluation));
       LOGGER.info("Optimization finished #{}", iteration);
       iteration++;
     } while (iteration < getMaxIterations());
-    return result;
+    return finalizationStep.finalize(request, result);
   }
 
-  public record OptimizationInput<Response>(Response response, Evaluation evaluation) {
+  public record OptimizationInput<Result>(Result result, Evaluation evaluation) {
 
   }
 

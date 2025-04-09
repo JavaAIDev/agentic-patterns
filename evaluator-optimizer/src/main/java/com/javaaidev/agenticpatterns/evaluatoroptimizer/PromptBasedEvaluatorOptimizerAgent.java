@@ -11,23 +11,27 @@ import org.springframework.ai.chat.client.ChatClient;
 /**
  * A {@linkplain EvaluatorOptimizerAgent} implementation uses prompts for subtask agents
  *
- * @param <Request>
- * @param <Response>
+ * @param <Request>  Type of request
+ * @param <Result>   Type of intermediate result
+ * @param <Response> Type of response
  */
-public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> extends
-    EvaluatorOptimizerAgent<Request, Response> {
-
+public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Result, Response> extends
+    EvaluatorOptimizerAgent<Request, Result, Response> {
 
   protected PromptBasedEvaluatorOptimizerAgent(ChatClient generationChatClient,
-      ChatClient evaluationChatClient) {
-    this(generationChatClient, evaluationChatClient, null, null);
+      ChatClient evaluationChatClient,
+      FinalizationStep<Request, Result, Response> finalizationStep) {
+    this(generationChatClient, evaluationChatClient, null, null, null, finalizationStep);
   }
 
   protected PromptBasedEvaluatorOptimizerAgent(ChatClient generationChatClient,
       ChatClient evaluationChatClient,
       @Nullable Type responseType,
-      @Nullable ObservationRegistry observationRegistry) {
-    super(generationChatClient, evaluationChatClient, responseType, observationRegistry);
+      @Nullable ObservationRegistry observationRegistry,
+      @Nullable InitializationStep<Request> initializationStep,
+      FinalizationStep<Request, Result, Response> finalizationStep) {
+    super(generationChatClient, evaluationChatClient, responseType, observationRegistry,
+        initializationStep, finalizationStep);
   }
 
   /**
@@ -48,7 +52,7 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     return new HashMap<>();
   }
 
-  public class GenerateInitialResultAgent extends TaskExecutionAgent<Request, Response> {
+  public class GenerateInitialResultAgent extends TaskExecutionAgent<Request, Result> {
 
     public GenerateInitialResultAgent(ChatClient chatClient, @Nullable Type responseType,
         @Nullable ObservationRegistry observationRegistry) {
@@ -67,7 +71,7 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
   }
 
   @Override
-  protected TaskExecutionAgent<Request, Response> buildInitialResultAgent(ChatClient chatClient,
+  protected TaskExecutionAgent<Request, Result> buildInitialResultAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
     return new GenerateInitialResultAgent(chatClient, responseType, observationRegistry);
   }
@@ -82,15 +86,15 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
   /**
    * Prepare for the values of variables in the prompt template to evaluate a result
    *
-   * @param response Response from a previous generation
+   * @param result Response from a previous generation
    * @return Values of variables
    */
   protected @Nullable Map<String, Object> buildEvaluationPromptContext(
-      @Nullable Response response) {
+      @Nullable Result result) {
     return new HashMap<>();
   }
 
-  public class EvaluateAgent extends TaskExecutionAgent<Response, Evaluation> {
+  public class EvaluateAgent extends TaskExecutionAgent<Result, Evaluation> {
 
     protected EvaluateAgent(ChatClient chatClient,
         @Nullable ObservationRegistry observationRegistry) {
@@ -103,13 +107,13 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
     }
 
     @Override
-    protected @Nullable Map<String, Object> getPromptContext(@Nullable Response response) {
-      return buildEvaluationPromptContext(response);
+    protected @Nullable Map<String, Object> getPromptContext(@Nullable Result result) {
+      return buildEvaluationPromptContext(result);
     }
   }
 
   @Override
-  protected TaskExecutionAgent<Response, Evaluation> buildEvaluationAgent(ChatClient chatClient,
+  protected TaskExecutionAgent<Result, Evaluation> buildEvaluationAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
     return new EvaluateAgent(chatClient, observationRegistry);
   }
@@ -128,11 +132,11 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
    * @return Values of variables
    */
   protected @Nullable Map<String, Object> buildOptimizationPromptContext(
-      @Nullable OptimizationInput<Response> optimizationInput) {
+      @Nullable OptimizationInput<Result> optimizationInput) {
     return new HashMap<>();
   }
 
-  public class OptimizeAgent extends TaskExecutionAgent<OptimizationInput<Response>, Response> {
+  public class OptimizeAgent extends TaskExecutionAgent<OptimizationInput<Result>, Result> {
 
     public OptimizeAgent(ChatClient chatClient, @Nullable Type responseType,
         @Nullable ObservationRegistry observationRegistry) {
@@ -146,13 +150,13 @@ public abstract class PromptBasedEvaluatorOptimizerAgent<Request, Response> exte
 
     @Override
     protected @Nullable Map<String, Object> getPromptContext(
-        @Nullable OptimizationInput<Response> responseOptimizationInput) {
+        @Nullable OptimizationInput<Result> responseOptimizationInput) {
       return buildOptimizationPromptContext(responseOptimizationInput);
     }
   }
 
   @Override
-  protected TaskExecutionAgent<OptimizationInput<Response>, Response> buildOptimizationAgent(
+  protected TaskExecutionAgent<OptimizationInput<Result>, Result> buildOptimizationAgent(
       ChatClient chatClient, @Nullable ObservationRegistry observationRegistry) {
     return new OptimizeAgent(chatClient, responseType, observationRegistry);
   }
