@@ -7,14 +7,14 @@ import org.jspecify.annotations.Nullable;
  *
  * @param <Request> Request type
  */
-public interface InitializationStep<Request> {
+public interface InitializationStep<Request, GenInput> {
 
   /**
    * Initialize the request
    *
    * @param request Request
-   * @return Updated request
+   * @return Generation input
    */
   @Nullable
-  Request initialize(@Nullable Request request);
+  GenInput initialize(@Nullable Request request);
 }

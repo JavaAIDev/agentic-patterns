@@ -6,7 +6,7 @@
 
   <groupId>com.javaaidev.agenticpatterns</groupId>
   <artifactId>agentic-patterns</artifactId>
-  <version>0.2.2</version>
+  <version>0.3.0</version>
   <packaging>pom</packaging>
   <name>Agentic Patterns</name>
   <description>Agentic Patterns implementation using Spring AI</description>

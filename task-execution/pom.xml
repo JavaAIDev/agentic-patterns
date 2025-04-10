@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.javaaidev.agenticpatterns</groupId>
     <artifactId>agentic-patterns</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
   </parent>
 
   <artifactId>task-execution</artifactId>
@@ -18,6 +18,11 @@
       <groupId>com.javaaidev.agenticpatterns</groupId>
       <artifactId>core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

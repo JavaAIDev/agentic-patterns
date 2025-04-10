@@ -137,4 +137,9 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
     }
     return output;
   }
+
+  public static <Req, Res> TaskExecutionAgentBuilder<Req, Res> builder() {
+    return new TaskExecutionAgentBuilder<>();
+  }
+
 }
