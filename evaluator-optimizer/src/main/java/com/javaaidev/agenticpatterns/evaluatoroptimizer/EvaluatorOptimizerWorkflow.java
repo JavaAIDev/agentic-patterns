@@ -1,9 +1,11 @@
 package com.javaaidev.agenticpatterns.evaluatoroptimizer;
 
+import com.javaaidev.agenticpatterns.core.AbstractAgenticWorkflow;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.EvaluationStep.EvaluationInput;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.FinalizationStep.FinalizationInput;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.OptimizationStep.OptimizationInput;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
+import io.micrometer.observation.ObservationRegistry;
 import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -11,15 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
- * Evaluator-Optimizer Agent, refer to the <a
+ * Evaluator-Optimizer Workflow, refer to the <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/evaluator-optimizer">pattern</a>
  *
  * @param <Request>   Type of agent input
  * @param <GenInput>  Type of generation input
  * @param <GenOutput> Type of generation output
+ * @param <ER>        Type of evaluation result
  * @param <Response>  Type of agent output
  */
-public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends EvaluationResult, Response> {
+public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends EvaluationResult, Response> extends
+    AbstractAgenticWorkflow<Request, Response> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EvaluatorOptimizerWorkflow.class);
 
@@ -39,7 +43,10 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
       @Nullable OptimizationStep<GenInput, GenOutput, ER> optimizationStep,
       FinalizationStep<Request, GenInput, GenOutput, Response> finalizationStep,
       Predicate<ER> evaluationPredicate,
-      int maxNumberOfEvaluations) {
+      int maxNumberOfEvaluations,
+      @Nullable String workflowName,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(workflowName, observationRegistry);
     this.initializationStep = initializationStep;
     this.initialResultGenerationStep = initialResultGenerationStep;
     this.evaluationStep = evaluationStep;
@@ -49,7 +56,7 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     this.maxNumberOfEvaluations = Math.max(1, maxNumberOfEvaluations);
   }
 
-  public Response execute(@Nullable Request request) {
+  public Response doExecute(@Nullable Request request) {
     LOGGER.info("Execute evaluator-optimizer workflow");
     LOGGER.info("Initialize generation input");
     var genInput = initializationStep.initialize(request);
@@ -92,6 +99,10 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     private FinalizationStep<Req, GenIn, GenOut, Res> finalizationStep;
     private Predicate<ER> evaluationPredicate;
     private int maxNumberOfEvaluations = 3;
+    @Nullable
+    private String name;
+    @Nullable
+    private ObservationRegistry observationRegistry;
 
     public Builder<Req, GenIn, GenOut, ER, Res> initializationStep(
         InitializationStep<Req, GenIn> initializationStep) {
@@ -177,6 +188,17 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
       return this;
     }
 
+    public Builder<Req, GenIn, GenOut, ER, Res> name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder<Req, GenIn, GenOut, ER, Res> observationRegistry(
+        ObservationRegistry observationRegistry) {
+      this.observationRegistry = observationRegistry;
+      return this;
+    }
+
     public EvaluatorOptimizerWorkflow<Req, GenIn, GenOut, ER, Res> build() {
       Assert.notNull(initializationStep, "InitializationStep cannot be null");
       Assert.notNull(initialResultGenerationStep, "InitialResultGenerationStep cannot be null");
@@ -189,7 +211,9 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
           optimizationStep,
           finalizationStep,
           evaluationPredicate,
-          maxNumberOfEvaluations);
+          maxNumberOfEvaluations,
+          name,
+          observationRegistry);
     }
   }
 }

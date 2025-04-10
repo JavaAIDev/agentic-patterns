@@ -1,5 +1,16 @@
 package com.javaaidev.agenticpatterns.evaluatoroptimizer;
 
-public record NumericEvaluationResult(int score, String feedback) {
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * Numeric evaluation result
+ *
+ * @param score    Evaluation score
+ * @param feedback Feedback if not passed
+ */
+public record NumericEvaluationResult(
+    @JsonPropertyDescription("Evaluation score, value from 0 to 100") int score,
+    @JsonPropertyDescription("Feedback of evaluation") @Nullable String feedback) {
 
 }

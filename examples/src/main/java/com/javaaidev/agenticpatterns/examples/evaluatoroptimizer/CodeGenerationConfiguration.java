@@ -65,6 +65,8 @@ public class CodeGenerationConfiguration {
                 .build())
         .finalizationStep(new NoopFinalizationStep<>())
         .evaluationPredicate(BooleanEvaluationResult::passed)
+        .name("CodeGeneration")
+        .observationRegistry(observationRegistry)
         .build();
   }
 
