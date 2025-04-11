@@ -1,5 +1,6 @@
 package com.javaaidev.agenticpatterns.taskexecution;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
@@ -18,7 +19,7 @@ class TaskExecutionAgentBuilderTest {
   @Test
   void testBuilder() {
     var agent = TaskExecutionAgent.<JokeInput, JokeOutput>defaultBuilder()
-        .agentName("test")
+        .name("test")
         .responseType(JokeOutput.class)
         .chatClient(chatClient)
         .promptTemplate("""
