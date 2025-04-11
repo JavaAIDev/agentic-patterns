@@ -10,19 +10,19 @@ public abstract class AbstractAgenticWorkflow<Request, Response> implements
     AgenticWorkflow<Request, Response> {
 
   @Nullable
-  protected String workflowName;
+  protected String name;
   @Nullable
   protected ObservationRegistry observationRegistry;
 
-  protected AbstractAgenticWorkflow(@Nullable String workflowName,
+  protected AbstractAgenticWorkflow(@Nullable String name,
       @Nullable ObservationRegistry observationRegistry) {
-    this.workflowName = workflowName;
+    this.name = name;
     this.observationRegistry = observationRegistry;
   }
 
   @Override
   public String getName() {
-    return this.workflowName != null ? this.workflowName : this.getClass().getSimpleName();
+    return this.name != null ? this.name : this.getClass().getSimpleName();
   }
 
   @Override
@@ -51,4 +51,5 @@ public abstract class AbstractAgenticWorkflow<Request, Response> implements
   }
 
   protected abstract Response doExecute(@Nullable Request request);
+
 }

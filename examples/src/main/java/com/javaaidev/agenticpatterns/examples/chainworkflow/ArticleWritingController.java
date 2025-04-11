@@ -1,7 +1,7 @@
 package com.javaaidev.agenticpatterns.examples.chainworkflow;
 
-import com.javaaidev.agenticpatterns.examples.chainworkflow.ArticleWritingAgent.ArticleWritingRequest;
-import com.javaaidev.agenticpatterns.examples.chainworkflow.ArticleWritingAgent.ArticleWritingResponse;
+import com.javaaidev.agenticpatterns.core.AgenticWorkflow;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,14 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/article_writing")
 public class ArticleWritingController {
 
-  private final ArticleWritingAgent agent;
+  private final AgenticWorkflow<ArticleWritingRequest, ArticleWritingResponse> workflow;
 
-  public ArticleWritingController(ArticleWritingAgent agent) {
-    this.agent = agent;
+  public ArticleWritingController(
+      @Qualifier("articleWritingWorkflow") AgenticWorkflow<ArticleWritingRequest, ArticleWritingResponse> workflow) {
+    this.workflow = workflow;
   }
 
   @PostMapping
   public ArticleWritingResponse articleWrite(@RequestBody ArticleWritingRequest request) {
-    return agent.call(request);
+    return workflow.execute(request);
   }
 }

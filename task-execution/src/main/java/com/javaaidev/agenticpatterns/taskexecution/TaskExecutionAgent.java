@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
@@ -31,6 +32,12 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
 
   @Nullable
   protected Type responseType;
+  protected String promptTemplate;
+  @Nullable
+  protected Function<Request, Map<String, Object>> promptTemplateContextProvider;
+  @Nullable
+  protected Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater;
+  protected String name = super.getName();
 
   protected TaskExecutionAgent(ChatClient chatClient) {
     this(chatClient, (ObservationRegistry) null);
@@ -52,12 +59,32 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
     this.responseType = responseType;
   }
 
+  protected TaskExecutionAgent(ChatClient chatClient,
+      String promptTemplate,
+      @Nullable Type responseType,
+      @Nullable Function<Request, Map<String, Object>> promptTemplateContextProvider,
+      @Nullable Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater,
+      @Nullable String name,
+      @Nullable ObservationRegistry observationRegistry
+  ) {
+    super(chatClient, observationRegistry);
+    this.promptTemplate = promptTemplate;
+    this.responseType = responseType;
+    this.promptTemplateContextProvider = promptTemplateContextProvider;
+    this.chatClientRequestSpecUpdater = chatClientRequestSpecUpdater;
+    if (name != null) {
+      this.name = name;
+    }
+  }
+
   /**
    * Get the prompt template
    *
    * @return prompt template
    */
-  protected abstract String getPromptTemplate();
+  protected String getPromptTemplate() {
+    return promptTemplate;
+  }
 
   /**
    * Prepare for the values of variables in the prompt template
@@ -67,6 +94,9 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
    */
   @Nullable
   protected Map<String, Object> getPromptContext(@Nullable Request request) {
+    if (promptTemplateContextProvider != null) {
+      return promptTemplateContextProvider.apply(request);
+    }
     return AgentUtils.objectToMap(request);
   }
 
@@ -76,6 +106,14 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
    * @param spec {@linkplain ChatClientRequestSpec} from Spring AI
    */
   protected void updateChatClientRequest(ChatClientRequestSpec spec) {
+    if (chatClientRequestSpecUpdater != null) {
+      chatClientRequestSpecUpdater.accept(spec);
+    }
+  }
+
+  @Override
+  protected String getName() {
+    return this.name;
   }
 
   @Override
@@ -138,8 +176,29 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
     return output;
   }
 
-  public static <Req, Res> TaskExecutionAgentBuilder<Req, Res> builder() {
-    return new TaskExecutionAgentBuilder<>();
+  public static <Req, Res> DefaultTaskExecutionAgentBuilder<Req, Res> defaultBuilder() {
+    return new DefaultTaskExecutionAgentBuilder<>();
+  }
+
+  interface Builder<Request, Response, T extends TaskExecutionAgent.Builder<Request, Response, T>> {
+
+    T chatClient(ChatClient chatClient);
+
+    T promptTemplate(String promptTemplate);
+
+    T name(String agentName);
+
+    T responseType(Type responseType);
+
+    T promptTemplateContextProvider(
+        Function<Request, Map<String, Object>> promptTemplateContextProvider);
+
+    T chatClientRequestSpecUpdater(
+        Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater);
+
+    T observationRegistry(ObservationRegistry observationRegistry);
+
+    TaskExecutionAgent<Request, Response> build();
   }
 
 }

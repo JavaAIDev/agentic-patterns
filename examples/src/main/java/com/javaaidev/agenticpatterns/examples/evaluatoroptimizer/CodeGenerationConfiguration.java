@@ -29,8 +29,8 @@ public class CodeGenerationConfiguration {
     return EvaluatorOptimizerWorkflow.<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse>builder()
         .initializationStep(new NoopInitializationStep<>())
         .initialResultGenerationStep(
-            TaskExecutionAgent.<CodeGenerationRequest, CodeGenerationResponse>builder()
-                .agentName("CodeGeneration_InitialResult")
+            TaskExecutionAgent.<CodeGenerationRequest, CodeGenerationResponse>defaultBuilder()
+                .name("CodeGeneration_InitialResult")
                 .chatClient(chatClient)
                 .observationRegistry(observationRegistry)
                 .responseType(CodeGenerationResponse.class)
@@ -38,8 +38,8 @@ public class CodeGenerationConfiguration {
                     "prompt_template/code-generator/initial-result.st"))
                 .build())
         .evaluationStep(
-            TaskExecutionAgent.<EvaluationInput<CodeGenerationRequest, CodeGenerationResponse>, BooleanEvaluationResult>builder()
-                .agentName("CodeGeneration_Evaluation")
+            TaskExecutionAgent.<EvaluationInput<CodeGenerationRequest, CodeGenerationResponse>, BooleanEvaluationResult>defaultBuilder()
+                .name("CodeGeneration_Evaluation")
                 .chatClient(chatClient)
                 .observationRegistry(observationRegistry)
                 .responseType(BooleanEvaluationResult.class)
@@ -50,8 +50,8 @@ public class CodeGenerationConfiguration {
                 ))
                 .build())
         .optimizationStep(
-            TaskExecutionAgent.<OptimizationInput<CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult>, CodeGenerationResponse>builder()
-                .agentName("CodeGeneration_Optimization")
+            TaskExecutionAgent.<OptimizationInput<CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult>, CodeGenerationResponse>defaultBuilder()
+                .name("CodeGeneration_Optimization")
                 .chatClient(chatClient)
                 .observationRegistry(observationRegistry)
                 .responseType(CodeGenerationResponse.class)

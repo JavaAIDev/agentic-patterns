@@ -1,6 +1,7 @@
 package com.javaaidev.agenticpatterns.evaluatoroptimizer;
 
 import com.javaaidev.agenticpatterns.core.AbstractAgenticWorkflow;
+import com.javaaidev.agenticpatterns.core.AbstractAgenticWorkflowBuilder;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.EvaluationStep.EvaluationInput;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.FinalizationStep.FinalizationInput;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.OptimizationStep.OptimizationInput;
@@ -37,7 +38,7 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
   private final Predicate<ER> evaluationPredicate;
   private final int maxNumberOfEvaluations;
 
-  public EvaluatorOptimizerWorkflow(InitializationStep<Request, GenInput> initializationStep,
+  EvaluatorOptimizerWorkflow(InitializationStep<Request, GenInput> initializationStep,
       InitialResultGenerationStep<GenInput, GenOutput> initialResultGenerationStep,
       @Nullable EvaluationStep<GenInput, GenOutput, ER> evaluationStep,
       @Nullable OptimizationStep<GenInput, GenOutput, ER> optimizationStep,
@@ -88,7 +89,8 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     return new Builder<>();
   }
 
-  public static class Builder<Req, GenIn, GenOut, ER extends EvaluationResult, Res> {
+  public static class Builder<Req, GenIn, GenOut, ER extends EvaluationResult, Res> extends
+      AbstractAgenticWorkflowBuilder<Req, Res, Builder<Req, GenIn, GenOut, ER, Res>> {
 
     private InitializationStep<Req, GenIn> initializationStep;
     private InitialResultGenerationStep<GenIn, GenOut> initialResultGenerationStep;
@@ -99,10 +101,6 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     private FinalizationStep<Req, GenIn, GenOut, Res> finalizationStep;
     private Predicate<ER> evaluationPredicate;
     private int maxNumberOfEvaluations = 3;
-    @Nullable
-    private String name;
-    @Nullable
-    private ObservationRegistry observationRegistry;
 
     public Builder<Req, GenIn, GenOut, ER, Res> initializationStep(
         InitializationStep<Req, GenIn> initializationStep) {
@@ -188,17 +186,7 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
       return this;
     }
 
-    public Builder<Req, GenIn, GenOut, ER, Res> name(String name) {
-      this.name = name;
-      return this;
-    }
-
-    public Builder<Req, GenIn, GenOut, ER, Res> observationRegistry(
-        ObservationRegistry observationRegistry) {
-      this.observationRegistry = observationRegistry;
-      return this;
-    }
-
+    @Override
     public EvaluatorOptimizerWorkflow<Req, GenIn, GenOut, ER, Res> build() {
       Assert.notNull(initializationStep, "InitializationStep cannot be null");
       Assert.notNull(initialResultGenerationStep, "InitialResultGenerationStep cannot be null");

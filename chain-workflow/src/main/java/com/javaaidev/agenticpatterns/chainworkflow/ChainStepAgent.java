@@ -1,12 +1,17 @@
 package com.javaaidev.agenticpatterns.chainworkflow;
 
+import com.javaaidev.agenticpatterns.taskexecution.AbstractTaskExecutionAgentBuilder;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 
 /**
  * A step in the chain
@@ -16,7 +21,7 @@ import org.springframework.core.Ordered;
  */
 public abstract class ChainStepAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> implements
-    Ordered {
+    Ordered, ChainStep<Request, Response> {
 
   protected ChainStepAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
@@ -29,14 +34,62 @@ public abstract class ChainStepAgent<Request, Response> extends
     super(chatClient, responseType, observationRegistry);
   }
 
-  /**
-   * Call the current step
-   *
-   * @param request Task input
-   * @param context Shared context between different steps
-   * @param chain   The chain, see {@linkplain WorkflowChain}
-   * @return Task output
-   */
-  protected abstract Response call(Request request, Map<String, Object> context,
-      WorkflowChain<Request, Response> chain);
+  public ChainStepAgent(ChatClient chatClient,
+      String promptTemplate,
+      @Nullable Type responseType,
+      @Nullable Function<Request, Map<String, Object>> promptTemplateContextProvider,
+      @Nullable Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater,
+      @Nullable String name,
+      @Nullable ObservationRegistry observationRegistry) {
+    super(chatClient, promptTemplate, responseType, promptTemplateContextProvider,
+        chatClientRequestSpecUpdater, name, observationRegistry);
+  }
+
+  public static <Req, Res> Builder<Req, Res> builder() {
+    return new Builder<>();
+  }
+
+  public static class Builder<Request, Response> extends
+      AbstractTaskExecutionAgentBuilder<Request, Response, Builder<Request, Response>> {
+
+    private Function<Response, Request> nextRequestPreparer;
+    private int order;
+
+    public Builder<Request, Response> nextRequestPreparer(
+        Function<Response, Request> nextRequestPreparer) {
+      this.nextRequestPreparer = nextRequestPreparer;
+      return this;
+    }
+
+    public Builder<Request, Response> order(int order) {
+      this.order = order;
+      return this;
+    }
+
+    @Override
+    public ChainStepAgent<Request, Response> build() {
+      Assert.notNull(chatClient, "ChatClient cannot be null");
+      Assert.hasText(promptTemplate, "Prompt template cannot be empty");
+      Assert.notNull(nextRequestPreparer, "nextRequestPreparer cannot be null");
+      return new ChainStepAgent<>(chatClient,
+          promptTemplate,
+          responseType,
+          promptTemplateContextProvider,
+          chatClientRequestSpecUpdater,
+          name,
+          observationRegistry) {
+        @Override
+        public Response call(Request request, Map<String, Object> context,
+            WorkflowChain<Request, Response> chain) {
+          var response = this.call(request);
+          return chain.callNext(nextRequestPreparer.apply(response), response);
+        }
+
+        @Override
+        public int getOrder() {
+          return order;
+        }
+      };
+    }
+  }
 }

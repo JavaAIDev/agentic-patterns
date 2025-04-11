@@ -1,4 +1,4 @@
-# Evaluator-Optimizer Agent
+# Evaluator-Optimizer Workflow
 
 Implementation
 of [Evaluator-Optimizer pattern](https://javaaidev.com/docs/agentic-patterns/patterns/evaluator-optimizer)
