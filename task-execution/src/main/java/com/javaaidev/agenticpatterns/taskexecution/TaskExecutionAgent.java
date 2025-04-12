@@ -186,7 +186,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
 
     T promptTemplate(String promptTemplate);
 
-    T name(String agentName);
+    T name(String name);
 
     T responseType(Type responseType);
 
