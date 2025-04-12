@@ -38,16 +38,17 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
   private final Predicate<ER> evaluationPredicate;
   private final int maxNumberOfEvaluations;
 
-  EvaluatorOptimizerWorkflow(InitializationStep<Request, GenInput> initializationStep,
+  public EvaluatorOptimizerWorkflow(
+      InitializationStep<Request, GenInput> initializationStep,
       InitialResultGenerationStep<GenInput, GenOutput> initialResultGenerationStep,
       @Nullable EvaluationStep<GenInput, GenOutput, ER> evaluationStep,
       @Nullable OptimizationStep<GenInput, GenOutput, ER> optimizationStep,
       FinalizationStep<Request, GenInput, GenOutput, Response> finalizationStep,
       Predicate<ER> evaluationPredicate,
       int maxNumberOfEvaluations,
-      @Nullable String workflowName,
+      @Nullable String name,
       @Nullable ObservationRegistry observationRegistry) {
-    super(workflowName, observationRegistry);
+    super(name, observationRegistry);
     this.initializationStep = initializationStep;
     this.initialResultGenerationStep = initialResultGenerationStep;
     this.evaluationStep = evaluationStep;

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 public class CodeGenerationConfiguration {
 
   @Bean
+  @Qualifier("codeGenerationWorkflow")
   public EvaluatorOptimizerWorkflow<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse> codeGenerationWorkflow(
       ChatClient.Builder chatClientBuilder,
       SimpleLoggerAdvisor simpleLoggerAdvisor,

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
- * Routing Workflow agent, refer to <a
+ * Routing Workflow, refer to <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/routing-workflow">doc</a>
  *
  * @param <Request>  Type of workflow input
@@ -25,8 +25,7 @@ public class RoutingWorkflow<Request, Response> extends AbstractAgenticWorkflow<
   private final RoutingSelector<Request, Response> routingSelector;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RoutingWorkflow.class);
-
-
+  
   public RoutingWorkflow(List<RoutingChoice<Request, Response>> routingChoices,
       RoutingSelector<Request, Response> routingSelector,
       @Nullable String name,

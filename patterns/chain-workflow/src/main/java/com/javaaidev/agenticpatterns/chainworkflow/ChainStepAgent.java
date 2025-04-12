@@ -10,7 +10,6 @@ import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
-import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
 /**
@@ -21,7 +20,7 @@ import org.springframework.util.Assert;
  */
 public abstract class ChainStepAgent<Request, Response> extends
     TaskExecutionAgent<Request, Response> implements
-    Ordered, ChainStep<Request, Response> {
+    ChainStep<Request, Response> {
 
   protected ChainStepAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {

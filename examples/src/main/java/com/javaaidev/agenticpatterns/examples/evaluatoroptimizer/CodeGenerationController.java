@@ -4,6 +4,7 @@ import com.javaaidev.agenticpatterns.evaluatoroptimizer.BooleanEvaluationResult;
 import com.javaaidev.agenticpatterns.evaluatoroptimizer.EvaluatorOptimizerWorkflow;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationConfiguration.CodeGenerationRequest;
 import com.javaaidev.agenticpatterns.examples.evaluatoroptimizer.CodeGenerationConfiguration.CodeGenerationResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,7 @@ public class CodeGenerationController {
   private final EvaluatorOptimizerWorkflow<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse> evaluatorOptimizerWorkflow;
 
   public CodeGenerationController(
-      EvaluatorOptimizerWorkflow<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse> codeGenerationAgent) {
+      @Qualifier("codeGenerationWorkflow") EvaluatorOptimizerWorkflow<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse> codeGenerationAgent) {
     this.evaluatorOptimizerWorkflow = codeGenerationAgent;
   }
 
