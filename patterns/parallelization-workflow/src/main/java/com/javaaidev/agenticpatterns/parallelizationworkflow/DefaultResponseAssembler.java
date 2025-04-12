@@ -12,6 +12,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 
+/**
+ * A {@linkplain ResponseAssembler} implemented using {@linkplain TaskExecutionAgent}
+ *
+ * @param <Request>
+ * @param <Response>
+ */
 public class DefaultResponseAssembler<Request, Response> extends
     TaskExecutionAgent<AssemblingInput<Request>, Response> implements
     ResponseAssembler<Request, Response> {

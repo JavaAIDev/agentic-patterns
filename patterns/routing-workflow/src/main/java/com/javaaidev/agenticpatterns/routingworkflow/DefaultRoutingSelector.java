@@ -11,6 +11,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
+/**
+ * A {@linkplain RoutingSelector} implemented using {@linkplain TaskExecutionAgent}
+ *
+ * @param <Request>
+ * @param <Response>
+ */
 public class DefaultRoutingSelector<Request, Response> extends
     TaskExecutionAgent<RoutingRequest<Request, Response>, RoutingResponse> implements
     RoutingSelector<Request, Response> {

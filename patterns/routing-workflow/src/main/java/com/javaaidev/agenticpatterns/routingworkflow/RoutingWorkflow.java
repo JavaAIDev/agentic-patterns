@@ -16,8 +16,8 @@ import org.springframework.util.Assert;
  * Routing Workflow agent, refer to <a
  * href="https://javaaidev.com/docs/agentic-patterns/patterns/routing-workflow">doc</a>
  *
- * @param <Request>  Type of agent input
- * @param <Response> Type of agent output
+ * @param <Request>  Type of workflow input
+ * @param <Response> Type of workflow output
  */
 public class RoutingWorkflow<Request, Response> extends AbstractAgenticWorkflow<Request, Response> {
 

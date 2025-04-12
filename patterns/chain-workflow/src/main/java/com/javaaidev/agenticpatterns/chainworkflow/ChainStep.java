@@ -3,6 +3,12 @@ package com.javaaidev.agenticpatterns.chainworkflow;
 import java.util.Map;
 import org.springframework.core.Ordered;
 
+/**
+ * A step in the chain
+ *
+ * @param <Request>
+ * @param <Response>
+ */
 public interface ChainStep<Request, Response> extends Ordered {
 
   /**

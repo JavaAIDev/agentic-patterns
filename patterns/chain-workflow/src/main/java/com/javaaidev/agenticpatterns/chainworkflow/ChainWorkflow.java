@@ -5,9 +5,15 @@ import com.javaaidev.agenticpatterns.core.AbstractAgenticWorkflowBuilder;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
-import org.springframework.util.Assert;
 
+/**
+ * A chain workflow
+ *
+ * @param <Request>
+ * @param <Response>
+ */
 public class ChainWorkflow<Request, Response> extends AbstractAgenticWorkflow<Request, Response> {
 
   private final List<ChainStep<Request, Response>> steps;
@@ -35,15 +41,13 @@ public class ChainWorkflow<Request, Response> extends AbstractAgenticWorkflow<Re
     private final List<ChainStep<Request, Response>> steps = new ArrayList<>();
 
     public Builder<Request, Response> addStep(ChainStep<Request, Response> step) {
-      Assert.notNull(step, "Chain step cannot be null");
-      steps.add(step);
+      steps.add(Objects.requireNonNull(step, "Chain step cannot be null"));
       return this;
     }
 
     public Builder<Request, Response> addStepAgent(
         ChainStepAgent<Request, Response> agent) {
-      Assert.notNull(agent, "Chain step agent cannot be null");
-      steps.add(agent);
+      steps.add(Objects.requireNonNull(agent, "Chain step agent cannot be null"));
       return this;
     }
 

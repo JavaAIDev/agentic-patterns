@@ -18,6 +18,13 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Parallelization Workflow agent, refer to <a
+ * href="https://javaaidev.com/docs/agentic-patterns/patterns/parallelization-workflow">doc</a>
+ *
+ * @param <Request>  Type of workflow input
+ * @param <Response> Type of workflow output
+ */
 public class ParallelizationWorkflow<Request, Response> extends
     AbstractAgenticWorkflow<Request, Response> {
 

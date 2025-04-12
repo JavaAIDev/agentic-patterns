@@ -14,7 +14,7 @@ import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
 /**
- * A step in the chain
+ * A step in the chain implemented as a {@linkplain TaskExecutionAgent}
  *
  * @param <Request>  Task input type
  * @param <Response> Task output type
