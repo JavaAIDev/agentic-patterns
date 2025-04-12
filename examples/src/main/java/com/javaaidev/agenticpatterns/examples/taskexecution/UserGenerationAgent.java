@@ -1,7 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.taskexecution;
 
 import com.javaaidev.agenticpatterns.core.AgentUtils;
-import com.javaaidev.agenticpatterns.examples.taskexecution.UserGenerationAgent.UserGenerationRequest;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
@@ -23,7 +22,4 @@ public class UserGenerationAgent extends
     return AgentUtils.loadPromptTemplateFromClasspath("prompt_template/generate-user.st");
   }
 
-  public record UserGenerationRequest(int count) {
-
-  }
 }

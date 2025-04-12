@@ -171,7 +171,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends Agent implem
       throw new AgentExecutionException("Invalid type " + type);
     }
     if (output == null) {
-      throw new RuntimeException("Empty or bad response from LLM");
+      throw new AgentExecutionException("Empty or bad response from LLM");
     }
     return output;
   }
