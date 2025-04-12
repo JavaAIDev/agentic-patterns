@@ -4,25 +4,25 @@ import com.javaaidev.agenticpatterns.core.observation.DefaultWorkflowExecutionOb
 import com.javaaidev.agenticpatterns.core.observation.WorkflowExecutionObservationContext;
 import com.javaaidev.agenticpatterns.core.observation.WorkflowExecutionObservationDocumentation;
 import io.micrometer.observation.ObservationRegistry;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractAgenticWorkflow<Request, Response> implements
     AgenticWorkflow<Request, Response> {
 
-  @Nullable
   protected String name;
   @Nullable
   protected ObservationRegistry observationRegistry;
 
   protected AbstractAgenticWorkflow(@Nullable String name,
       @Nullable ObservationRegistry observationRegistry) {
-    this.name = name;
+    this.name = Objects.requireNonNullElseGet(name, () -> this.getClass().getSimpleName());
     this.observationRegistry = observationRegistry;
   }
 
   @Override
   public String getName() {
-    return this.name != null ? this.name : this.getClass().getSimpleName();
+    return this.name;
   }
 
   @Override
