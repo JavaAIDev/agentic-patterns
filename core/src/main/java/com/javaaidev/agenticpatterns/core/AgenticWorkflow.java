@@ -20,11 +20,8 @@ public interface AgenticWorkflow<Request, Response> {
     AgenticWorkflow<Request, Response> build();
   }
 
-  static <Request, Response> SingleStepWorkflowBuilder<Request, Response> single() {
-    return new SingleStepWorkflowBuilder<>();
+  static <Request, Response> CustomWorkflowBuilder<Request, Response> custom() {
+    return new CustomWorkflowBuilder<>();
   }
 
-  static <Request, Response> CompositeWorkflowBuilder<Request, Response> composite() {
-    return new CompositeWorkflowBuilder<>();
-  }
 }

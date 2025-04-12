@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.javaaidev.agenticpatterns</groupId>
-    <artifactId>agentic-patterns</artifactId>
+    <artifactId>patterns</artifactId>
     <version>0.3.0</version>
   </parent>
 
-  <artifactId>evaluator-optimizer</artifactId>
-  <name>Agentic Patterns :: Evaluator-Optimizer</name>
-  <description>Evaluator-Optimizer agent</description>
+  <artifactId>parallelization-workflow</artifactId>
+  <name>Agentic Patterns :: Parallelization Workflow</name>
+  <description>Parallelization Workflow agent</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>

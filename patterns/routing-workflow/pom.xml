@@ -5,24 +5,26 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.javaaidev.agenticpatterns</groupId>
-    <artifactId>agentic-patterns</artifactId>
+    <artifactId>patterns</artifactId>
     <version>0.3.0</version>
   </parent>
 
-  <artifactId>task-execution</artifactId>
-  <name>Agentic Patterns :: Task Execution</name>
-  <description>Task Execution agent</description>
+  <artifactId>routing-workflow</artifactId>
+  <name>Agentic Patterns :: Routing Workflow</name>
+  <description>Routing Workflow agent</description>
+
+  <properties>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.javaaidev.agenticpatterns</groupId>
-      <artifactId>core</artifactId>
+      <artifactId>task-execution</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.ai</groupId>
-      <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+
 </project>

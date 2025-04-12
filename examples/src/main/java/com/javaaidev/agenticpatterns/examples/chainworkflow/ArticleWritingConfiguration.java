@@ -24,7 +24,7 @@ public class ArticleWritingConfiguration {
       @Qualifier("articleGenerationAgent") TaskExecutionAgent<ArticleWritingRequest, ArticleWritingResponse> articleGenerationAgent,
       @Qualifier("articleImprovementWorkflow") ChainWorkflow<ArticleImprovementRequest, ArticleImprovementResponse> articleImprovementWorkflow
   ) {
-    return AgenticWorkflow.<ArticleWritingRequest, ArticleWritingResponse>single()
+    return AgenticWorkflow.<ArticleWritingRequest, ArticleWritingResponse>custom()
         .name("ArticleWritingWorkflow")
         .observationRegistry(observationRegistry)
         .action(request -> {

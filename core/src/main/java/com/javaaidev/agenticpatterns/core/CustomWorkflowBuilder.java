@@ -1,17 +1,17 @@
 package com.javaaidev.agenticpatterns.core;
 
+import java.util.Objects;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
-public class SingleStepWorkflowBuilder<Request, Response> extends
-    AbstractAgenticWorkflowBuilder<Request, Response, SingleStepWorkflowBuilder<Request, Response>> {
+public class CustomWorkflowBuilder<Request, Response> extends
+    AbstractAgenticWorkflowBuilder<Request, Response, CustomWorkflowBuilder<Request, Response>> {
 
   protected Function<Request, Response> action;
 
-  public SingleStepWorkflowBuilder<Request, Response> action(Function<Request, Response> action) {
-    Assert.notNull(action, "Action cannot be null");
-    this.action = action;
+  public CustomWorkflowBuilder<Request, Response> action(Function<Request, Response> action) {
+    this.action = Objects.requireNonNull(action, "Action cannot be null");
     return this;
   }
 
