@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>patterns</artifactId>
-  <name>Patterns</name>
+  <name>Agentic Patterns :: Patterns</name>
   <description>Agentic patterns</description>
   <packaging>pom</packaging>
 

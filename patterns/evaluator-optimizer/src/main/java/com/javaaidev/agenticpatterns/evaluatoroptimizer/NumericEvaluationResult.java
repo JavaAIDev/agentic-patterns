@@ -11,6 +11,11 @@ import org.jspecify.annotations.Nullable;
  */
 public record NumericEvaluationResult(
     @JsonPropertyDescription("Evaluation score, value from 0 to 100") int score,
-    @JsonPropertyDescription("Feedback of evaluation") @Nullable String feedback) {
+    @JsonPropertyDescription("Feedback of evaluation") @Nullable String feedback) implements
+    EvaluationResult {
 
+  @Override
+  public @Nullable String getFeedback() {
+    return feedback();
+  }
 }

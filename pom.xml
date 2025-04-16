@@ -18,6 +18,11 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
+  <organization>
+    <name>JavaAIDev.com</name>
+    <url>https://javaaidev.com</url>
+  </organization>
+  <inceptionYear>2025</inceptionYear>
 
   <developers>
     <developer>
@@ -43,10 +48,11 @@
   </modules>
 
   <properties>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
+    <java.version>21</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-ai.version>1.0.0-M5</spring-ai.version>
+    <spring-ai.version>1.0.0-M6</spring-ai.version>
     <micrometer.version>1.14.4</micrometer.version>
   </properties>
 
