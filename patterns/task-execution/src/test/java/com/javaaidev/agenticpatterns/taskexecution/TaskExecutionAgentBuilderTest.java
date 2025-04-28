@@ -14,7 +14,11 @@ import org.springframework.ai.openai.api.OpenAiApi;
 class TaskExecutionAgentBuilderTest {
 
   private final ChatClient chatClient = ChatClient.builder(
-      new OpenAiChatModel(new OpenAiApi(System.getenv("OPENAI_API_KEY")))).build();
+      OpenAiChatModel.builder()
+          .openAiApi(OpenAiApi.builder()
+              .apiKey(System.getenv("OPENAI_API_KEY"))
+              .build())
+          .build()).build();
 
   @Test
   void testBuilder() {
