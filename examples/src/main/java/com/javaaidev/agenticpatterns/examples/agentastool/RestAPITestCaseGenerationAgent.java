@@ -28,7 +28,7 @@ public class RestAPITestCaseGenerationAgent extends
 
   @Override
   protected void updateChatClientRequest(ChatClientRequestSpec spec) {
-    spec.functions("userGenerationAgent");
+    spec.toolNames("userGenerationAgent");
   }
 
   public record RestAPITestCaseGenerationResponse(String code) {
