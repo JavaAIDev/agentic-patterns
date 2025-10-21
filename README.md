@@ -8,4 +8,4 @@ Reference implementation of [Agentic Workflow and Patterns](https://javaaidev.co
 Requirements:
 
 - Java 21 (for virtual threads)
-- Spring AI (Current version `1.0.1`)
+- Spring AI (Current version `1.0.3`)
