@@ -14,8 +14,11 @@ public class DefaultTaskExecutionAgentBuilder<Request, Response> extends
         responseType,
         promptTemplateContextProvider,
         chatClientRequestSpecUpdater,
+        mcpClientConfiguration,
+        toolFilter,
         name,
-        observationRegistry) {
+        observationRegistry,
+        objectMapper) {
     };
   }
 }

@@ -1,10 +1,13 @@
 package com.javaaidev.agenticpatterns.taskexecution;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javaaidev.agenticpatterns.core.McpClientConfiguration;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
@@ -20,6 +23,9 @@ public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T ext
   protected @Nullable ObservationRegistry observationRegistry;
   protected @Nullable Function<Request, Map<String, Object>> promptTemplateContextProvider;
   protected @Nullable Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater;
+  protected @Nullable McpClientConfiguration mcpClientConfiguration;
+  protected @Nullable Predicate<String> toolFilter;
+  protected @Nullable ObjectMapper objectMapper;
 
   @SuppressWarnings("unchecked")
   protected T self() {
@@ -64,6 +70,25 @@ public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T ext
   public T chatClientRequestSpecUpdater(
       Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater) {
     this.chatClientRequestSpecUpdater = chatClientRequestSpecUpdater;
+    return self();
+  }
+
+  @Override
+  public T mcpClientConfiguration(
+      McpClientConfiguration mcpClientConfiguration) {
+    this.mcpClientConfiguration = mcpClientConfiguration;
+    return self();
+  }
+
+  @Override
+  public T toolFilter(Predicate<String> toolFilter) {
+    this.toolFilter = toolFilter;
+    return self();
+  }
+
+  @Override
+  public T objectMapper(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
     return self();
   }
 }

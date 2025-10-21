@@ -1,4 +1,4 @@
-Goal: Generate {count} users
+Goal: Generate {count} users. Generated users are also saved as a JSON file to `/tmp`.
 
 Requirements:
 - Id should be a version 4 random UUID.

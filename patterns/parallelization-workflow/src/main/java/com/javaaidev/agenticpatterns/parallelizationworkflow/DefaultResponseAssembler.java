@@ -1,5 +1,7 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javaaidev.agenticpatterns.core.McpClientConfiguration;
 import com.javaaidev.agenticpatterns.parallelizationworkflow.DefaultResponseAssembler.AssemblingInput;
 import com.javaaidev.agenticpatterns.taskexecution.AbstractTaskExecutionAgentBuilder;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
@@ -8,12 +10,14 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 
 /**
- * A {@linkplain ResponseAssembler} implemented using {@linkplain TaskExecutionAgent}
+ * A {@linkplain ResponseAssembler} implemented using
+ * {@linkplain TaskExecutionAgent}
  *
  * @param <Request>
  * @param <Response>
@@ -26,14 +30,20 @@ public class DefaultResponseAssembler<Request, Response> extends
       String promptTemplate, @Nullable Type responseType,
       @Nullable Function<AssemblingInput<Request>, Map<String, Object>> promptTemplateContextProvider,
       @Nullable Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater,
+      @Nullable McpClientConfiguration mcpClientConfiguration,
+      @Nullable Predicate<String> toolFilter,
       @Nullable String name,
-      @Nullable ObservationRegistry observationRegistry) {
-    super(chatClient, promptTemplate, responseType, promptTemplateContextProvider,
-        chatClientRequestSpecUpdater, name, observationRegistry);
+      @Nullable ObservationRegistry observationRegistry,
+      @Nullable ObjectMapper objectMapper) {
+    super(chatClient, promptTemplate, responseType,
+        promptTemplateContextProvider,
+        chatClientRequestSpecUpdater, mcpClientConfiguration, toolFilter,
+        name, observationRegistry, objectMapper);
   }
 
   @Override
-  public Response assemble(@Nullable Request request, TaskExecutionResults results) {
+  public Response assemble(@Nullable Request request,
+      TaskExecutionResults results) {
     return this.call(new AssemblingInput<>(request, results));
   }
 
@@ -57,8 +67,11 @@ public class DefaultResponseAssembler<Request, Response> extends
           responseType,
           promptTemplateContextProvider,
           chatClientRequestSpecUpdater,
+          mcpClientConfiguration,
+          toolFilter,
           name,
-          observationRegistry
+          observationRegistry,
+          objectMapper
       );
     }
   }
