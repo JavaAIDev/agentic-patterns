@@ -10,7 +10,6 @@ public class RestAPITestCaseGenerationConfiguration {
   @Bean
   public RestAPITestCaseGenerationAgent restAPITestCaseGenerationAgent(
       ChatClient.Builder chatClientBuilder) {
-    return new RestAPITestCaseGenerationAgent(
-        chatClientBuilder.build());
+    return new RestAPITestCaseGenerationAgent(chatClientBuilder.build());
   }
 }

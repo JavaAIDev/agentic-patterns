@@ -65,8 +65,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
   protected String name = super.getName();
   protected ObjectMapper objectMapper = new ObjectMapper();
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(
-      TaskExecutionAgent.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutionAgent.class);
 
   protected TaskExecutionAgent(ChatClient chatClient) {
     this(chatClient, (ObservationRegistry) null);
@@ -172,15 +171,13 @@ public abstract class TaskExecutionAgent<Request, Response> extends
     if (observationRegistry == null) {
       return action.apply(request);
     }
-    var observationContext = new AgentExecutionObservationContext(getName(),
-        request);
-    var observation =
-        AgentExecutionObservationDocumentation.AGENT_EXECUTION.observation(
-            null,
-            new DefaultAgentExecutionObservationConvention(),
-            () -> observationContext,
-            observationRegistry
-        ).start();
+    var observationContext = new AgentExecutionObservationContext(getName(), request);
+    var observation = AgentExecutionObservationDocumentation.AGENT_EXECUTION.observation(
+        null,
+        new DefaultAgentExecutionObservationConvention(),
+        () -> observationContext,
+        observationRegistry
+    ).start();
     try (var ignored = observation.openScope()) {
       var response = action.apply(request);
       observationContext.setResponse(response);
@@ -256,9 +253,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
             .clientBuilder(HttpClient.newBuilder())
             .objectMapper(objectMapper)
             .build();
-        transports.add(
-            new NamedClientMcpTransport(serverParameters.getKey(),
-                transport));
+        transports.add(new NamedClientMcpTransport(serverParameters.getKey(), transport));
       }
     }
 
@@ -267,8 +262,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
       for (NamedClientMcpTransport namedTransport : transports) {
 
         McpSchema.Implementation clientInfo = new McpSchema.Implementation(
-            namedTransport.name(),
-            "1.0.0");
+            namedTransport.name(), "1.0.0");
 
         McpClient.AsyncSpec spec = McpClient.async(namedTransport.transport())
             .clientInfo(clientInfo)

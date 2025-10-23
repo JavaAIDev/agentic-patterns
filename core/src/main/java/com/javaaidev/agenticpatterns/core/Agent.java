@@ -18,8 +18,7 @@ public abstract class Agent {
     this.observationRegistry = null;
   }
 
-  protected Agent(ChatClient chatClient,
-      @Nullable ObservationRegistry observationRegistry) {
+  protected Agent(ChatClient chatClient, @Nullable ObservationRegistry observationRegistry) {
     this.chatClient = chatClient;
     this.observationRegistry = observationRegistry;
   }

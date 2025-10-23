@@ -6,8 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 public record ParameterizedTypeImpl(@Nullable Type rawType,
                                     Type[] actualTypeArguments,
-                                    @Nullable Type ownerType) implements
-    ParameterizedType {
+                                    @Nullable Type ownerType) implements ParameterizedType {
 
   @Override
   public Type[] getActualTypeArguments() {

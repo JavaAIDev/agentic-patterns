@@ -85,8 +85,7 @@ public class ArticleWritingConfiguration {
               .name("ArticleImprovement#" + i)
               .chatClient(chatClient)
               .responseType(ArticleImprovementResponse.class)
-              .nextRequestPreparer(response -> new ArticleImprovementRequest(
-                  response.article()))
+              .nextRequestPreparer(response -> new ArticleImprovementRequest(response.article()))
               .promptTemplate("""
                   Goal: Improve an article by following the instruction:
                   
@@ -97,9 +96,7 @@ public class ArticleWritingConfiguration {
                   """)
               .promptTemplateContextProvider(request -> Map.of(
                   "instruction", instruction,
-                  "article",
-                  AgentUtils.safeGet(request,
-                      ArticleImprovementRequest::article, "")
+                  "article", AgentUtils.safeGet(request, ArticleImprovementRequest::article, "")
               ))
               .order(100 + i)
               .observationRegistry(observationRegistry)

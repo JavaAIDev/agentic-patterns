@@ -13,8 +13,7 @@ public class NoopFinalizationStep<Request, Response> implements
 
 
   @Override
-  public Response finalize(@Nullable Request request,
-      @Nullable Request request2,
+  public Response finalize(@Nullable Request request, @Nullable Request request2,
       Response response) {
     return response;
   }

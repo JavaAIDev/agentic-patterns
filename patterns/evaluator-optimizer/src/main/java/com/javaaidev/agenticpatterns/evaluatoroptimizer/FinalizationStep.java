@@ -20,8 +20,7 @@ public interface FinalizationStep<Request, GenInput, GenOutput, Response> {
    * @param genOutput Generation output
    * @return Response
    */
-  Response finalize(@Nullable Request request, @Nullable GenInput genInput,
-      GenOutput genOutput);
+  Response finalize(@Nullable Request request, @Nullable GenInput genInput, GenOutput genOutput);
 
   record FinalizationInput<Req, GenIn, GenOut>(
       @Nullable Req request,

@@ -22,8 +22,7 @@ import org.springframework.util.Assert;
  * @param <Response> Task output type
  */
 public abstract class ChainStepAgent<Request, Response> extends
-    TaskExecutionAgent<Request, Response> implements
-    ChainStep<Request, Response> {
+    TaskExecutionAgent<Request, Response> implements ChainStep<Request, Response> {
 
   protected ChainStepAgent(ChatClient chatClient,
       @Nullable ObservationRegistry observationRegistry) {
@@ -77,8 +76,7 @@ public abstract class ChainStepAgent<Request, Response> extends
     public ChainStepAgent<Request, Response> build() {
       Assert.notNull(chatClient, "ChatClient cannot be null");
       Assert.hasText(promptTemplate, "Prompt template cannot be empty");
-      Assert.notNull(nextRequestPreparer,
-          "nextRequestPreparer cannot be null");
+      Assert.notNull(nextRequestPreparer, "nextRequestPreparer cannot be null");
       return new ChainStepAgent<>(chatClient,
           promptTemplate,
           responseType,
@@ -93,8 +91,7 @@ public abstract class ChainStepAgent<Request, Response> extends
         public Response call(Request request, Map<String, Object> context,
             WorkflowChain<Request, Response> chain) {
           var response = this.call(request);
-          return chain.callNext(nextRequestPreparer.apply(response),
-              response);
+          return chain.callNext(nextRequestPreparer.apply(response), response);
         }
 
         @Override

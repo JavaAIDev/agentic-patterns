@@ -26,8 +26,7 @@ import org.springframework.util.Assert;
 public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends EvaluationResult, Response> extends
     AbstractAgenticWorkflow<Request, Response> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(
-      EvaluatorOptimizerWorkflow.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EvaluatorOptimizerWorkflow.class);
 
   private final InitializationStep<Request, GenInput> initializationStep;
   private final InitialResultGenerationStep<GenInput, GenOutput> initialResultGenerationStep;
@@ -122,8 +121,7 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
 
     public Builder<Req, GenIn, GenOut, ER, Res> initialResultGenerationStep(
         InitialResultGenerationStep<GenIn, GenOut> initialResultGenerationStep) {
-      Assert.notNull(initialResultGenerationStep,
-          "InitialResultGenerationStep cannot be null");
+      Assert.notNull(initialResultGenerationStep, "InitialResultGenerationStep cannot be null");
       this.initialResultGenerationStep = initialResultGenerationStep;
       return this;
     }
@@ -144,9 +142,8 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     public Builder<Req, GenIn, GenOut, ER, Res> evaluationStep(
         TaskExecutionAgent<EvaluationInput<GenIn, GenOut>, ER> taskExecutionAgent) {
       Assert.notNull(taskExecutionAgent, "TaskExecutionAgent cannot be null");
-      this.evaluationStep = (genIn, genOut) ->
-          taskExecutionAgent.call(
-              new EvaluationInput<>(genIn, genOut));
+      this.evaluationStep = (genIn, genOut) -> taskExecutionAgent.call(
+          new EvaluationInput<>(genIn, genOut));
       return this;
     }
 
@@ -181,8 +178,7 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
 
     public Builder<Req, GenIn, GenOut, ER, Res> evaluationPredicate(
         Predicate<ER> evaluationPredicate) {
-      Assert.notNull(evaluationPredicate,
-          "evaluationPredicate cannot be null");
+      Assert.notNull(evaluationPredicate, "evaluationPredicate cannot be null");
       this.evaluationPredicate = evaluationPredicate;
       return this;
     }
@@ -196,11 +192,9 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     @Override
     public EvaluatorOptimizerWorkflow<Req, GenIn, GenOut, ER, Res> build() {
       Assert.notNull(initializationStep, "InitializationStep cannot be null");
-      Assert.notNull(initialResultGenerationStep,
-          "InitialResultGenerationStep cannot be null");
+      Assert.notNull(initialResultGenerationStep, "InitialResultGenerationStep cannot be null");
       Assert.notNull(finalizationStep, "FinalizationStep cannot be null");
-      Assert.notNull(evaluationPredicate,
-          "evaluationPredicate cannot be null");
+      Assert.notNull(evaluationPredicate, "evaluationPredicate cannot be null");
       return new EvaluatorOptimizerWorkflow<>(
           initializationStep,
           initialResultGenerationStep,

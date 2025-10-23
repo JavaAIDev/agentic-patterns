@@ -34,8 +34,7 @@ public class ParallelizationWorkflow<Request, Response> extends
   private Duration maxTaskExecutionDuration;
   private ExecutorService taskExecutorService;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(
-      ParallelizationWorkflow.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParallelizationWorkflow.class);
 
   public ParallelizationWorkflow(
       List<SubtaskContext> subtasks,
@@ -46,17 +45,13 @@ public class ParallelizationWorkflow<Request, Response> extends
       @Nullable String name,
       @Nullable ObservationRegistry observationRegistry) {
     super(name, observationRegistry);
-    this.subtasks = Objects.requireNonNull(subtasks,
-        "Subtasks cannot be null");
+    this.subtasks = Objects.requireNonNull(subtasks, "Subtasks cannot be null");
     this.responseAssembler = Objects.requireNonNull(responseAssembler,
         "ResponseAssembler cannot be null");
-    this.subtasksCreator = Objects.requireNonNullElse(subtasksCreator,
-        (request) -> List.of());
-    this.maxTaskExecutionDuration = Objects.requireNonNullElse(
-        maxTaskExecutionDuration,
+    this.subtasksCreator = Objects.requireNonNullElse(subtasksCreator, (request) -> List.of());
+    this.maxTaskExecutionDuration = Objects.requireNonNullElse(maxTaskExecutionDuration,
         Duration.ofMinutes(3));
-    this.taskExecutorService = Objects.requireNonNullElseGet(
-        taskExecutorService,
+    this.taskExecutorService = Objects.requireNonNullElseGet(taskExecutorService,
         this::getDefaultTaskExecutorService);
   }
 
@@ -76,8 +71,7 @@ public class ParallelizationWorkflow<Request, Response> extends
   protected TaskExecutionResults runSubtasks(@Nullable Request request) {
     var createdTasks = subtasksCreator.apply(request);
     if (createdTasks != null) {
-      subtasks.addAll(
-          createdTasks.stream().map(SubtaskContext::create).toList());
+      subtasks.addAll(createdTasks.stream().map(SubtaskContext::create).toList());
     }
     LOGGER.info("{} subtasks to run", subtasks.size());
     var jobs = subtasks.stream().map(context -> {
@@ -120,8 +114,7 @@ public class ParallelizationWorkflow<Request, Response> extends
      * Add new subtask
      *
      * @param taskId             Task id
-     * @param subtask            Subtask implemented as
-     *                           {@linkplain TaskExecutionAgent}
+     * @param subtask            Subtask implemented as {@linkplain TaskExecutionAgent}
      * @param requestTransformer Transform request to task's input
      * @param <TaskRequest>      Task input type
      * @param <TaskResponse>     Task output type
@@ -130,8 +123,7 @@ public class ParallelizationWorkflow<Request, Response> extends
         String taskId,
         TaskExecutionAgent<TaskRequest, TaskResponse> subtask,
         Function<Request, TaskRequest> requestTransformer) {
-      subtasks.add(
-          SubtaskContext.create(taskId, subtask, requestTransformer));
+      subtasks.add(SubtaskContext.create(taskId, subtask, requestTransformer));
       return this;
     }
 
@@ -151,8 +143,7 @@ public class ParallelizationWorkflow<Request, Response> extends
 
     public Builder<Request, Response> maxTaskExecutionDuration(
         Duration maxTaskExecutionDuration) {
-      this.maxTaskExecutionDuration = Objects.requireNonNull(
-          maxTaskExecutionDuration,
+      this.maxTaskExecutionDuration = Objects.requireNonNull(maxTaskExecutionDuration,
           "maxTaskExecutionDuration cannot be null");
       return this;
     }

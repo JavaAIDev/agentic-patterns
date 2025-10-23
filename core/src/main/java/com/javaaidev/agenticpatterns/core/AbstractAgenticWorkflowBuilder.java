@@ -21,8 +21,7 @@ public abstract class AbstractAgenticWorkflowBuilder<Request, Response, T extend
     return self();
   }
 
-  public T observationRegistry(
-      ObservationRegistry observationRegistry) {
+  public T observationRegistry(ObservationRegistry observationRegistry) {
     this.observationRegistry = observationRegistry;
     return self();
   }

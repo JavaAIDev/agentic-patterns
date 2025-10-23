@@ -19,8 +19,7 @@ public class ArticleWritingController {
   }
 
   @PostMapping
-  public ArticleWritingResponse articleWrite(
-      @RequestBody ArticleWritingRequest request) {
+  public ArticleWritingResponse articleWrite(@RequestBody ArticleWritingRequest request) {
     return workflow.execute(request);
   }
 }

@@ -14,8 +14,7 @@ import org.jspecify.annotations.Nullable;
  * @param <Request>
  * @param <Response>
  */
-public class ChainWorkflow<Request, Response> extends
-    AbstractAgenticWorkflow<Request, Response> {
+public class ChainWorkflow<Request, Response> extends AbstractAgenticWorkflow<Request, Response> {
 
   private final List<ChainStep<Request, Response>> steps;
 
@@ -41,16 +40,13 @@ public class ChainWorkflow<Request, Response> extends
 
     private final List<ChainStep<Request, Response>> steps = new ArrayList<>();
 
-    public Builder<Request, Response> addStep(
-        ChainStep<Request, Response> step) {
+    public Builder<Request, Response> addStep(ChainStep<Request, Response> step) {
       steps.add(Objects.requireNonNull(step, "Chain step cannot be null"));
       return this;
     }
 
-    public Builder<Request, Response> addStepAgent(
-        ChainStepAgent<Request, Response> agent) {
-      steps.add(
-          Objects.requireNonNull(agent, "Chain step agent cannot be null"));
+    public Builder<Request, Response> addStepAgent(ChainStepAgent<Request, Response> agent) {
+      steps.add(Objects.requireNonNull(agent, "Chain step agent cannot be null"));
       return this;
     }
 

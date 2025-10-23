@@ -37,8 +37,7 @@ public class CustomerSupportConfiguration {
             .chatClient(chatClient)
             .promptTemplate("{question}")
             .responseType(CustomerSupportResponse.class)
-            .chatClientRequestSpecUpdater(
-                spec -> spec.system(route.agentSystemText()))
+            .chatClientRequestSpecUpdater(spec -> spec.system(route.agentSystemText()))
             .name("CustomerSupport_" + route.name)
             .observationRegistry(observationRegistry)
             .build()

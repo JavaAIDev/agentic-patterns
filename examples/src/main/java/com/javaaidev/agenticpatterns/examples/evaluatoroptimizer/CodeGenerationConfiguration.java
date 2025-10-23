@@ -60,8 +60,7 @@ public class CodeGenerationConfiguration {
                 .promptTemplateContextProvider(optimizationInput -> Map.of(
                     "code", optimizationInput.genOutput().code(),
                     "feedback",
-                    Objects.requireNonNullElse(
-                        optimizationInput.evaluationResult().feedback(), "")
+                    Objects.requireNonNullElse(optimizationInput.evaluationResult().feedback(), "")
                 ))
                 .build())
         .finalizationStep(new NoopFinalizationStep<>())

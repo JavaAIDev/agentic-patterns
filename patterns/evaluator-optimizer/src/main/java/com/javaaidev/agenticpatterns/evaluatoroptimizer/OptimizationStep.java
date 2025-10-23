@@ -19,8 +19,7 @@ public interface OptimizationStep<GenInput, GenOutput, ER extends EvaluationResu
    * @param evaluationResult Evaluation result
    * @return Optimized generation output
    */
-  GenOutput optimize(@Nullable GenInput genInput, GenOutput genOutput,
-      ER evaluationResult);
+  GenOutput optimize(@Nullable GenInput genInput, GenOutput genOutput, ER evaluationResult);
 
   record OptimizationInput<GenIn, GenOut, ER>(
       @Nullable GenIn genInput,

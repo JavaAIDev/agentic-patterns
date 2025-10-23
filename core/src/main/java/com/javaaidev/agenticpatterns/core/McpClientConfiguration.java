@@ -17,8 +17,7 @@ public record McpClientConfiguration(
     public Map<String, ServerParameters> toServerParameters() {
       Map<String, ServerParameters> serverParameters = new HashMap<>();
       for (Map.Entry<String, Parameters> entry : this.connections.entrySet()) {
-        serverParameters.put(entry.getKey(),
-            entry.getValue().toServerParameters());
+        serverParameters.put(entry.getKey(), entry.getValue().toServerParameters());
       }
       return serverParameters;
     }

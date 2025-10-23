@@ -28,9 +28,8 @@ public class UserGenerationConfiguration {
     return TaskExecutionAgent.<UserGenerationRequest, UserGenerationResponse>defaultBuilder()
         .chatClient(chatClient)
         .responseType(UserGenerationResponse.class)
-        .promptTemplate(
-            AgentUtils.loadPromptTemplateFromClasspath(
-                "prompt_template/generate-user.st"))
+        .promptTemplate(AgentUtils.loadPromptTemplateFromClasspath(
+            "prompt_template/generate-user.st"))
         .name("UserGeneration")
         .observationRegistry(observationRegistry)
         .mcpClientConfiguration(new McpClientConfiguration(

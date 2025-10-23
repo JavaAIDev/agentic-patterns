@@ -20,8 +20,7 @@ public class CustomerSupportController {
 
 
   @PostMapping
-  public CustomerSupportResponse customerSupport(
-      @RequestBody CustomerSupportRequest request) {
+  public CustomerSupportResponse customerSupport(@RequestBody CustomerSupportRequest request) {
     return customerSupportWorkflow.execute(request);
   }
 }

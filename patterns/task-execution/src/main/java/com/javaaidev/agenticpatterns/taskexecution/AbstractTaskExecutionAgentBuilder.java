@@ -55,8 +55,7 @@ public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T ext
     return self();
   }
 
-  public T observationRegistry(
-      ObservationRegistry observationRegistry) {
+  public T observationRegistry(ObservationRegistry observationRegistry) {
     this.observationRegistry = observationRegistry;
     return self();
   }
@@ -74,8 +73,7 @@ public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T ext
   }
 
   @Override
-  public T mcpClientConfiguration(
-      McpClientConfiguration mcpClientConfiguration) {
+  public T mcpClientConfiguration(McpClientConfiguration mcpClientConfiguration) {
     this.mcpClientConfiguration = mcpClientConfiguration;
     return self();
   }

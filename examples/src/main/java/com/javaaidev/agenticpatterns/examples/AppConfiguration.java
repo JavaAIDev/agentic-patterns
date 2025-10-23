@@ -18,8 +18,7 @@ public class AppConfiguration {
 
   @Bean
   public RestClient.Builder restClientBuilder(HttpClient httpClient) {
-    JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(
-        httpClient);
+    JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
     requestFactory.setReadTimeout(API_TIMEOUT);
     return RestClient.builder().requestFactory(requestFactory);
   }

@@ -27,8 +27,7 @@ public class AlgorithmArticleGenerationConfiguration {
     var chatClient = chatClientBuilder.build();
     return ParallelizationWorkflow.<AlgorithmArticleGenerationRequest, AlgorithmArticleGenerationResponse>builder()
         .subtasksCreator(request -> {
-          var languages = AgentUtils.safeGet(request,
-              AlgorithmArticleGenerationRequest::languages,
+          var languages = AgentUtils.safeGet(request, AlgorithmArticleGenerationRequest::languages,
               List.<String>of());
           if (CollectionUtils.isEmpty(languages)) {
             return List.of();

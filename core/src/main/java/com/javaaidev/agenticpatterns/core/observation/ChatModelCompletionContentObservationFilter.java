@@ -13,8 +13,7 @@ import org.springframework.ai.observation.ObservabilityHelper;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-public class ChatModelCompletionContentObservationFilter implements
-    ObservationFilter {
+public class ChatModelCompletionContentObservationFilter implements ObservationFilter {
 
   @Override
   public Observation.Context map(Observation.Context context) {
@@ -52,17 +51,14 @@ public class ChatModelCompletionContentObservationFilter implements
     return chatModelObservationContext;
   }
 
-  private List<String> processPrompts(
-      ChatModelObservationContext chatModelObservationContext) {
-    var instructions = chatModelObservationContext.getRequest()
-        .getInstructions();
+  private List<String> processPrompts(ChatModelObservationContext chatModelObservationContext) {
+    var instructions = chatModelObservationContext.getRequest().getInstructions();
     return CollectionUtils.isEmpty(instructions)
         ? List.of()
         : instructions.stream().map(Content::getText).toList();
   }
 
-  private List<String> processCompletion(
-      ChatModelObservationContext context) {
+  private List<String> processCompletion(ChatModelObservationContext context) {
     if (context.getResponse() == null) {
       return List.of();
     }

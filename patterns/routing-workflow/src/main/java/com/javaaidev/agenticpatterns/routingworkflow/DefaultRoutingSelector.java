@@ -12,8 +12,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
 /**
- * A {@linkplain RoutingSelector} implemented using
- * {@linkplain TaskExecutionAgent}
+ * A {@linkplain RoutingSelector} implemented using {@linkplain TaskExecutionAgent}
  *
  * @param <Request>
  * @param <Response>

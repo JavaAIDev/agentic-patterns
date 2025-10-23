@@ -5,8 +5,7 @@ import io.micrometer.observation.Observation.Context;
 import io.micrometer.observation.ObservationConvention;
 import io.micrometer.observation.docs.ObservationDocumentation;
 
-public enum WorkflowExecutionObservationDocumentation implements
-    ObservationDocumentation {
+public enum WorkflowExecutionObservationDocumentation implements ObservationDocumentation {
   WORKFLOW_EXECUTION {
     @Override
     public Class<? extends ObservationConvention<? extends Context>> getDefaultConvention() {

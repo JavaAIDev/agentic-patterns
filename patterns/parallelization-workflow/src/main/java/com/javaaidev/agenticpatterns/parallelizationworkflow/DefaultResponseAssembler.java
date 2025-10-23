@@ -16,8 +16,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 
 /**
- * A {@linkplain ResponseAssembler} implemented using
- * {@linkplain TaskExecutionAgent}
+ * A {@linkplain ResponseAssembler} implemented using {@linkplain TaskExecutionAgent}
  *
  * @param <Request>
  * @param <Response>
@@ -42,8 +41,7 @@ public class DefaultResponseAssembler<Request, Response> extends
   }
 
   @Override
-  public Response assemble(@Nullable Request request,
-      TaskExecutionResults results) {
+  public Response assemble(@Nullable Request request, TaskExecutionResults results) {
     return this.call(new AssemblingInput<>(request, results));
   }
 
@@ -51,8 +49,7 @@ public class DefaultResponseAssembler<Request, Response> extends
     return new Builder<>();
   }
 
-  public record AssemblingInput<Request>(@Nullable Request request,
-                                         TaskExecutionResults results) {
+  public record AssemblingInput<Request>(@Nullable Request request, TaskExecutionResults results) {
 
   }
 
