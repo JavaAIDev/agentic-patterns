@@ -24,7 +24,8 @@ public class TypeResolver {
       return Object.class;
     }
     var generics = type.getGenerics();
-    var paraType = new ParameterizedTypeImpl(type.resolve(), new Type[generics.length],
+    var paraType = new ParameterizedTypeImpl(type.resolve(),
+        new Type[generics.length],
         null);
     for (int i = 0; i < generics.length; i++) {
       var nestedType = generics[i];

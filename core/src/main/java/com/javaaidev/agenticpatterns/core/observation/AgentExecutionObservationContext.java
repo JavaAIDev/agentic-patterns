@@ -2,7 +2,8 @@ package com.javaaidev.agenticpatterns.core.observation;
 
 import io.micrometer.observation.transport.RequestReplySenderContext;
 
-public class AgentExecutionObservationContext extends RequestReplySenderContext<Object, Object> {
+public class AgentExecutionObservationContext extends
+    RequestReplySenderContext<Object, Object> {
 
   private final String agentName;
 

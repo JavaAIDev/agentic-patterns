@@ -18,12 +18,14 @@ public class DefaultAgentExecutionObservationConvention implements
   }
 
   @Override
-  public KeyValues getLowCardinalityKeyValues(AgentExecutionObservationContext context) {
+  public KeyValues getLowCardinalityKeyValues(
+      AgentExecutionObservationContext context) {
     return KeyValues.of(agentName(context));
   }
 
   @Override
-  public KeyValues getHighCardinalityKeyValues(AgentExecutionObservationContext context) {
+  public KeyValues getHighCardinalityKeyValues(
+      AgentExecutionObservationContext context) {
     return KeyValues.of(
         agentExecutionInput(context),
         agentExecutionOutput(context)
@@ -36,17 +38,21 @@ public class DefaultAgentExecutionObservationConvention implements
     );
   }
 
-  private KeyValue agentExecutionInput(AgentExecutionObservationContext context) {
+  private KeyValue agentExecutionInput(
+      AgentExecutionObservationContext context) {
     return KeyValue.of(
         HighCardinalityKeyNames.AGENT_EXECUTION_INPUT,
-        context.getCarrier() != null ? AgentUtils.toJson(context.getCarrier()) : KeyValue.NONE_VALUE
+        context.getCarrier() != null ? AgentUtils.toJson(context.getCarrier())
+            : KeyValue.NONE_VALUE
     );
   }
 
-  private KeyValue agentExecutionOutput(AgentExecutionObservationContext context) {
+  private KeyValue agentExecutionOutput(
+      AgentExecutionObservationContext context) {
     return KeyValue.of(
         HighCardinalityKeyNames.AGENT_EXECUTION_OUTPUT,
-        context.getResponse() != null ? AgentUtils.toJson(context.getResponse())
+        context.getResponse() != null ? AgentUtils.toJson(
+            context.getResponse())
             : KeyValue.NONE_VALUE
     );
   }

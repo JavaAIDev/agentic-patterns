@@ -31,7 +31,8 @@ public record SubtaskExecutionContext(
       var result = job().get(maxWaitTime().toSeconds(), TimeUnit.SECONDS);
       return new SubtaskExecutionContext(job(), maxWaitTime(), result, null);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      return new SubtaskExecutionContext(job(), maxWaitTime(), null, job().exceptionNow());
+      return new SubtaskExecutionContext(job(), maxWaitTime(), null,
+          job().exceptionNow());
     }
   }
 }

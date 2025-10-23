@@ -26,7 +26,8 @@ import org.springframework.util.Assert;
 public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends EvaluationResult, Response> extends
     AbstractAgenticWorkflow<Request, Response> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(EvaluatorOptimizerWorkflow.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      EvaluatorOptimizerWorkflow.class);
 
   private final InitializationStep<Request, GenInput> initializationStep;
   private final InitialResultGenerationStep<GenInput, GenOutput> initialResultGenerationStep;
@@ -65,7 +66,8 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     LOGGER.info("Generate initial result");
     var genOutput = initialResultGenerationStep.generate(genInput);
     if (evaluationStep == null || optimizationStep == null) {
-      LOGGER.info("No evaluation step or optimization step, skip the evaluation");
+      LOGGER.info(
+          "No evaluation step or optimization step, skip the evaluation");
       return finalizationStep.finalize(request, genInput, genOutput);
     }
     int iteration = 0;
@@ -79,7 +81,8 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
         break;
       }
       LOGGER.info("Begin optimization #{}", iteration);
-      genOutput = optimizationStep.optimize(genInput, genOutput, evaluationResult);
+      genOutput = optimizationStep.optimize(genInput, genOutput,
+          evaluationResult);
       LOGGER.info("Finish optimization #{}", iteration);
       iteration++;
     } while (iteration < maxNumberOfEvaluations);
@@ -119,7 +122,8 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
 
     public Builder<Req, GenIn, GenOut, ER, Res> initialResultGenerationStep(
         InitialResultGenerationStep<GenIn, GenOut> initialResultGenerationStep) {
-      Assert.notNull(initialResultGenerationStep, "InitialResultGenerationStep cannot be null");
+      Assert.notNull(initialResultGenerationStep,
+          "InitialResultGenerationStep cannot be null");
       this.initialResultGenerationStep = initialResultGenerationStep;
       return this;
     }
@@ -177,12 +181,14 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
 
     public Builder<Req, GenIn, GenOut, ER, Res> evaluationPredicate(
         Predicate<ER> evaluationPredicate) {
-      Assert.notNull(evaluationPredicate, "evaluationPredicate cannot be null");
+      Assert.notNull(evaluationPredicate,
+          "evaluationPredicate cannot be null");
       this.evaluationPredicate = evaluationPredicate;
       return this;
     }
 
-    public Builder<Req, GenIn, GenOut, ER, Res> maxNumberOfEvaluations(int maxNumberOfEvaluations) {
+    public Builder<Req, GenIn, GenOut, ER, Res> maxNumberOfEvaluations(
+        int maxNumberOfEvaluations) {
       this.maxNumberOfEvaluations = Math.max(1, maxNumberOfEvaluations);
       return this;
     }
@@ -190,9 +196,11 @@ public class EvaluatorOptimizerWorkflow<Request, GenInput, GenOutput, ER extends
     @Override
     public EvaluatorOptimizerWorkflow<Req, GenIn, GenOut, ER, Res> build() {
       Assert.notNull(initializationStep, "InitializationStep cannot be null");
-      Assert.notNull(initialResultGenerationStep, "InitialResultGenerationStep cannot be null");
+      Assert.notNull(initialResultGenerationStep,
+          "InitialResultGenerationStep cannot be null");
       Assert.notNull(finalizationStep, "FinalizationStep cannot be null");
-      Assert.notNull(evaluationPredicate, "evaluationPredicate cannot be null");
+      Assert.notNull(evaluationPredicate,
+          "evaluationPredicate cannot be null");
       return new EvaluatorOptimizerWorkflow<>(
           initializationStep,
           initialResultGenerationStep,

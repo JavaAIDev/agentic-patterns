@@ -18,6 +18,9 @@ management:
       export:
         enabled: true
         url: http://localhost:4318/v1/metrics
+  observations:
+    annotations:
+      enabled: true
   tracing:
     sampling:
       probability: 1.0

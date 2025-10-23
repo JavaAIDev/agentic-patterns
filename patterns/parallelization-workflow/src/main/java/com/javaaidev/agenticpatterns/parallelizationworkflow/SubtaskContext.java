@@ -19,10 +19,12 @@ public record SubtaskContext<Request>(
     @Nullable SubtaskExecutionContext executionContext
 ) {
 
-  public static <Request, TaskRequest, TaskResponse> SubtaskContext<Request> create(String taskId,
+  public static <Request, TaskRequest, TaskResponse> SubtaskContext<Request> create(
+      String taskId,
       TaskExecutionAgent<TaskRequest, TaskResponse> task,
       Function<Request, TaskRequest> requestTransformer) {
-    return create(new SubtaskCreationRequest<>(taskId, task, requestTransformer));
+    return create(
+        new SubtaskCreationRequest<>(taskId, task, requestTransformer));
   }
 
   public static <Request> SubtaskContext<Request> create(
@@ -30,14 +32,16 @@ public record SubtaskContext<Request>(
     return new SubtaskContext<>(creationRequest, null);
   }
 
-  public SubtaskContext<Request> taskStarted(Future<?> job, Duration maxWaitTime) {
+  public SubtaskContext<Request> taskStarted(Future<?> job,
+      Duration maxWaitTime) {
     return new SubtaskContext<>(this.creationRequest(),
         new SubtaskExecutionContext(job, maxWaitTime));
   }
 
   public SubtaskContext<Request> collectResult() {
     return new SubtaskContext<>(creationRequest(),
-        Objects.requireNonNull(executionContext(), "task execution context cannot be null")
+        Objects.requireNonNull(executionContext(),
+                "task execution context cannot be null")
             .collectResult());
   }
 

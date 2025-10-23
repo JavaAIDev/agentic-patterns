@@ -12,7 +12,6 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +23,9 @@ public class CodeGenerationConfiguration {
   @Qualifier("codeGenerationWorkflow")
   public EvaluatorOptimizerWorkflow<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse> codeGenerationWorkflow(
       ChatClient.Builder chatClientBuilder,
-      SimpleLoggerAdvisor simpleLoggerAdvisor,
       ObservationRegistry observationRegistry
   ) {
-    var chatClient = chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build();
+    var chatClient = chatClientBuilder.build();
     return EvaluatorOptimizerWorkflow.<CodeGenerationRequest, CodeGenerationRequest, CodeGenerationResponse, BooleanEvaluationResult, CodeGenerationResponse>builder()
         .initializationStep(new NoopInitializationStep<>())
         .initialResultGenerationStep(
@@ -62,7 +60,8 @@ public class CodeGenerationConfiguration {
                 .promptTemplateContextProvider(optimizationInput -> Map.of(
                     "code", optimizationInput.genOutput().code(),
                     "feedback",
-                    Objects.requireNonNullElse(optimizationInput.evaluationResult().feedback(), "")
+                    Objects.requireNonNullElse(
+                        optimizationInput.evaluationResult().feedback(), "")
                 ))
                 .build())
         .finalizationStep(new NoopFinalizationStep<>())

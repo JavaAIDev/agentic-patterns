@@ -9,7 +9,6 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import java.util.Map;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,9 +39,8 @@ public class ArticleWritingConfiguration {
   @Qualifier("articleGenerationAgent")
   public TaskExecutionAgent<ArticleWritingRequest, ArticleWritingResponse> articleGenerationAgent(
       ChatClient.Builder chatClientBuilder,
-      SimpleLoggerAdvisor simpleLoggerAdvisor,
       ObservationRegistry observationRegistry) {
-    var chatClient = chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build();
+    var chatClient = chatClientBuilder.build();
     return TaskExecutionAgent.<ArticleWritingRequest, ArticleWritingResponse>defaultBuilder()
         .name("ArticleGeneration")
         .chatClient(chatClient)
@@ -56,9 +54,8 @@ public class ArticleWritingConfiguration {
   @Qualifier("articleImprovementWorkflow")
   public ChainWorkflow<ArticleImprovementRequest, ArticleImprovementResponse> articleImprovementWorkflow(
       ChatClient.Builder chatClientBuilder,
-      SimpleLoggerAdvisor simpleLoggerAdvisor,
       ObservationRegistry observationRegistry) {
-    var chatClient = chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build();
+    var chatClient = chatClientBuilder.build();
     var instructions = List.of(
         """
             Review the Structure
@@ -88,7 +85,8 @@ public class ArticleWritingConfiguration {
               .name("ArticleImprovement#" + i)
               .chatClient(chatClient)
               .responseType(ArticleImprovementResponse.class)
-              .nextRequestPreparer(response -> new ArticleImprovementRequest(response.article()))
+              .nextRequestPreparer(response -> new ArticleImprovementRequest(
+                  response.article()))
               .promptTemplate("""
                   Goal: Improve an article by following the instruction:
                   
@@ -100,7 +98,8 @@ public class ArticleWritingConfiguration {
               .promptTemplateContextProvider(request -> Map.of(
                   "instruction", instruction,
                   "article",
-                  AgentUtils.safeGet(request, ArticleImprovementRequest::article, "")
+                  AgentUtils.safeGet(request,
+                      ArticleImprovementRequest::article, "")
               ))
               .order(100 + i)
               .observationRegistry(observationRegistry)

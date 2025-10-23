@@ -19,7 +19,8 @@ public class UserGenerationAgentController {
   }
 
   @PostMapping
-  public UserGenerationResponse generateUsers(@RequestBody UserGenerationRequest request) {
+  public UserGenerationResponse generateUsers(
+      @RequestBody UserGenerationRequest request) {
     return userGenerationAgent.call(request);
   }
 }

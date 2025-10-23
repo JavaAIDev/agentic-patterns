@@ -19,14 +19,17 @@ import org.springframework.util.Assert;
  * @param <Request>  Type of workflow input
  * @param <Response> Type of workflow output
  */
-public class RoutingWorkflow<Request, Response> extends AbstractAgenticWorkflow<Request, Response> {
+public class RoutingWorkflow<Request, Response> extends
+    AbstractAgenticWorkflow<Request, Response> {
 
   private final List<RoutingChoice<Request, Response>> routingChoices;
   private final RoutingSelector<Request, Response> routingSelector;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RoutingWorkflow.class);
-  
-  public RoutingWorkflow(List<RoutingChoice<Request, Response>> routingChoices,
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      RoutingWorkflow.class);
+
+  public RoutingWorkflow(
+      List<RoutingChoice<Request, Response>> routingChoices,
       RoutingSelector<Request, Response> routingSelector,
       @Nullable String name,
       @Nullable ObservationRegistry observationRegistry) {
@@ -38,14 +41,16 @@ public class RoutingWorkflow<Request, Response> extends AbstractAgenticWorkflow<
   @Override
   protected Response doExecute(@Nullable Request request) {
     LOGGER.info("Select the route for request {}", request);
-    var routingTarget = routingSelector.select(new RoutingRequest<>(request, routingChoices));
+    var routingTarget = routingSelector.select(
+        new RoutingRequest<>(request, routingChoices));
     LOGGER.info("Selected routing target: {}", routingTarget);
     var targetAgent = routingChoices.stream()
         .filter(choice -> Objects.equals(routingTarget.name(), choice.name()))
         .findFirst()
         .map(RoutingChoice::agent)
         .orElseThrow(() -> new AgentExecutionException(
-            "No matching choice found for routing target: " + routingTarget.name()));
+            "No matching choice found for routing target: "
+                + routingTarget.name()));
     return targetAgent.call(request);
   }
 
@@ -73,7 +78,8 @@ public class RoutingWorkflow<Request, Response> extends AbstractAgenticWorkflow<
       return this;
     }
 
-    public Builder<Request, Response> addRoutingChoice(RoutingChoice<Request, Response> choice) {
+    public Builder<Request, Response> addRoutingChoice(
+        RoutingChoice<Request, Response> choice) {
       Assert.notNull(choice, "Routing choice cannot be null");
       routingChoices.add(choice);
       return this;
@@ -88,8 +94,10 @@ public class RoutingWorkflow<Request, Response> extends AbstractAgenticWorkflow<
 
     @Override
     public RoutingWorkflow<Request, Response> build() {
-      Assert.notEmpty(routingChoices, "At least one routing choice is required");
-      return new RoutingWorkflow<>(routingChoices, routingSelector, name, observationRegistry);
+      Assert.notEmpty(routingChoices,
+          "At least one routing choice is required");
+      return new RoutingWorkflow<>(routingChoices, routingSelector, name,
+          observationRegistry);
     }
   }
 }

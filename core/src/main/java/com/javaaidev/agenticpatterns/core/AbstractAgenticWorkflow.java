@@ -16,7 +16,8 @@ public abstract class AbstractAgenticWorkflow<Request, Response> implements
 
   protected AbstractAgenticWorkflow(@Nullable String name,
       @Nullable ObservationRegistry observationRegistry) {
-    this.name = Objects.requireNonNullElseGet(name, () -> this.getClass().getSimpleName());
+    this.name = Objects.requireNonNullElseGet(name,
+        () -> this.getClass().getSimpleName());
     this.observationRegistry = observationRegistry;
   }
 
@@ -30,7 +31,8 @@ public abstract class AbstractAgenticWorkflow<Request, Response> implements
     if (observationRegistry == null || observationRegistry.isNoop()) {
       return doExecute(request);
     }
-    var observationContext = new WorkflowExecutionObservationContext(getName(), request);
+    var observationContext = new WorkflowExecutionObservationContext(
+        getName(), request);
     var observation =
         WorkflowExecutionObservationDocumentation.WORKFLOW_EXECUTION.observation(
             null,

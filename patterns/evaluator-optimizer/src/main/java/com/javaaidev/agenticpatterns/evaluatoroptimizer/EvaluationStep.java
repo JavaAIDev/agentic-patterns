@@ -21,7 +21,8 @@ public interface EvaluationStep<GenInput, GenOutput, ER extends EvaluationResult
    */
   ER evaluate(@Nullable GenInput genInput, GenOutput genOutput);
 
-  record EvaluationInput<GenIn, GenOut>(@Nullable GenIn genInput, GenOut genOutput) {
+  record EvaluationInput<GenIn, GenOut>(@Nullable GenIn genInput,
+                                        GenOut genOutput) {
 
   }
 }

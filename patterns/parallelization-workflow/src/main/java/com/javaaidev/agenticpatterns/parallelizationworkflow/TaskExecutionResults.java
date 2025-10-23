@@ -17,7 +17,9 @@ public record TaskExecutionResults(Map<String, SubtaskResult> results) {
    * @return A map from task id to its result
    */
   public Map<String, Object> allSuccessfulResults() {
-    return results().entrySet().stream().filter(entry -> entry.getValue().hasResult())
-        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().result()));
+    return results().entrySet().stream()
+        .filter(entry -> entry.getValue().hasResult())
+        .collect(Collectors.toMap(Entry::getKey,
+            entry -> entry.getValue().result()));
   }
 }

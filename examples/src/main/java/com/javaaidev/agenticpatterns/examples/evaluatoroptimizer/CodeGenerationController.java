@@ -22,7 +22,8 @@ public class CodeGenerationController {
   }
 
   @PostMapping
-  public CodeGenerationResponse generateCode(@RequestBody CodeGenerationRequest request) {
+  public CodeGenerationResponse generateCode(
+      @RequestBody CodeGenerationRequest request) {
     return evaluatorOptimizerWorkflow.execute(request);
   }
 }

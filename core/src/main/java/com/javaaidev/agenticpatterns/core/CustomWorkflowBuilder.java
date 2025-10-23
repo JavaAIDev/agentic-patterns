@@ -22,7 +22,8 @@ public class CustomWorkflowBuilder<Request, Response> extends
    * @param action Action to run
    * @return Current builder
    */
-  public CustomWorkflowBuilder<Request, Response> action(Function<Request, Response> action) {
+  public CustomWorkflowBuilder<Request, Response> action(
+      Function<Request, Response> action) {
     this.action = Objects.requireNonNull(action, "Action cannot be null");
     return this;
   }

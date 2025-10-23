@@ -7,7 +7,6 @@ import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,12 +18,12 @@ public class CustomerSupportConfiguration {
   @Qualifier("customerSupportWorkflow")
   public RoutingWorkflow<CustomerSupportRequest, CustomerSupportResponse> customerSupportWorkflow(
       ChatClient.Builder chatClientBuilder,
-      SimpleLoggerAdvisor simpleLoggerAdvisor,
       ObservationRegistry observationRegistry
   ) {
-    var chatClient = chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build();
+    var chatClient = chatClientBuilder.build();
     var routes = List.of(
-        new CustomerSupportRoute("payment", "Handle queries about payment and refund",
+        new CustomerSupportRoute("payment",
+            "Handle queries about payment and refund",
             "You are a customer support agent for payment, be polite and helpful"),
         new CustomerSupportRoute("shipping", "Handle queries about shipping",
             "You are a customer support agent for shipping, be polite and helpful"),
@@ -38,7 +37,8 @@ public class CustomerSupportConfiguration {
             .chatClient(chatClient)
             .promptTemplate("{question}")
             .responseType(CustomerSupportResponse.class)
-            .chatClientRequestSpecUpdater(spec -> spec.system(route.agentSystemText()))
+            .chatClientRequestSpecUpdater(
+                spec -> spec.system(route.agentSystemText()))
             .name("CustomerSupport_" + route.name)
             .observationRegistry(observationRegistry)
             .build()
@@ -56,7 +56,8 @@ public class CustomerSupportConfiguration {
         .build();
   }
 
-  record CustomerSupportRoute(String name, String description, String agentSystemText) {
+  record CustomerSupportRoute(String name, String description,
+                              String agentSystemText) {
 
   }
 }

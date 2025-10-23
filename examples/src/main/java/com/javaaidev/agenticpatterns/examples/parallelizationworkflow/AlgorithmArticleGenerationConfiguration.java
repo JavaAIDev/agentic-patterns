@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,14 +22,14 @@ public class AlgorithmArticleGenerationConfiguration {
   @Qualifier("algorithmArticleGenerationWorkflow")
   public ParallelizationWorkflow<AlgorithmArticleGenerationRequest, AlgorithmArticleGenerationResponse> algorithmArticleGenerationWorkflow(
       ChatClient.Builder chatClientBuilder,
-      SimpleLoggerAdvisor simpleLoggerAdvisor,
       ObservationRegistry observationRegistry
   ) {
-    var chatClient = chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build();
+    var chatClient = chatClientBuilder.build();
     return ParallelizationWorkflow.<AlgorithmArticleGenerationRequest, AlgorithmArticleGenerationResponse>builder()
         .subtasksCreator(request -> {
           var languages = AgentUtils.safeGet(request,
-              AlgorithmArticleGenerationRequest::languages, List.<String>of());
+              AlgorithmArticleGenerationRequest::languages,
+              List.<String>of());
           if (CollectionUtils.isEmpty(languages)) {
             return List.of();
           }
@@ -70,15 +69,19 @@ public class AlgorithmArticleGenerationConfiguration {
                   var results = input.results();
                   var algorithm = AgentUtils.safeGet(request,
                       AlgorithmArticleGenerationRequest::algorithm, "");
-                  var sampleCode = results.allSuccessfulResults().entrySet().stream()
+                  var sampleCode = results.allSuccessfulResults().entrySet()
+                      .stream()
                       .map(entry -> """
                           Language: %s
                           Code:
                           %s
                           """.formatted(entry.getKey(),
                           ((SampleCodeGenerationResponse) entry.getValue()).code()))
-                      .collect(Collectors.joining("==========\n", "\n----------\n", "=========="));
-                  return Map.of("algorithm", algorithm, "sample_code", sampleCode);
+                      .collect(
+                          Collectors.joining("==========\n", "\n----------\n",
+                              "=========="));
+                  return Map.of("algorithm", algorithm, "sample_code",
+                      sampleCode);
                 })
                 .name("AlgorithmArticleGeneration")
                 .chatClient(chatClient)

@@ -26,9 +26,11 @@ public class AgentUtils {
    */
   public static String loadPromptTemplateFromClasspath(String resource) {
     try {
-      return new ClassPathResource(resource).getContentAsString(StandardCharsets.UTF_8);
+      return new ClassPathResource(resource).getContentAsString(
+          StandardCharsets.UTF_8);
     } catch (IOException e) {
-      throw new AgentExecutionException("Prompt template not found: " + resource, e);
+      throw new AgentExecutionException(
+          "Prompt template not found: " + resource, e);
     }
   }
 
@@ -39,7 +41,8 @@ public class AgentUtils {
    * @param map2 Second map
    * @return Merged map
    */
-  public static Map<String, Object> mergeMap(@Nullable Map<String, Object> map1,
+  public static Map<String, Object> mergeMap(
+      @Nullable Map<String, Object> map1,
       @Nullable Map<String, Object> map2) {
     var m1 = Optional.ofNullable(map1)
         .orElseGet(HashMap::new);
@@ -51,7 +54,8 @@ public class AgentUtils {
     return result;
   }
 
-  public static <T, R> R safeGet(@Nullable T obj, Function<T, R> extractor, R defaultValue) {
+  public static <T, R> R safeGet(@Nullable T obj, Function<T, R> extractor,
+      R defaultValue) {
     return Optional.ofNullable(obj).map(extractor).orElse(defaultValue);
   }
 

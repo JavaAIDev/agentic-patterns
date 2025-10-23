@@ -21,10 +21,12 @@ public class WorkflowChain<Request, Response> {
   private final Deque<ChainStep<Request, Response>> steps;
   private final Map<String, Object> context = new HashMap<>();
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowChain.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      WorkflowChain.class);
 
   public WorkflowChain(List<ChainStep<Request, Response>> steps) {
-    this.steps = new ArrayDeque<>(steps.stream().sorted(OrderComparator.INSTANCE).toList());
+    this.steps = new ArrayDeque<>(
+        steps.stream().sorted(OrderComparator.INSTANCE).toList());
     LOGGER.info("Added {} agents to the chain", this.steps.size());
   }
 

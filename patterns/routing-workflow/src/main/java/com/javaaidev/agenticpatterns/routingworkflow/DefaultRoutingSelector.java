@@ -12,7 +12,8 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.util.Assert;
 
 /**
- * A {@linkplain RoutingSelector} implemented using {@linkplain TaskExecutionAgent}
+ * A {@linkplain RoutingSelector} implemented using
+ * {@linkplain TaskExecutionAgent}
  *
  * @param <Request>
  * @param <Response>
@@ -34,7 +35,8 @@ public class DefaultRoutingSelector<Request, Response> extends
       @Nullable Function<Request, String> routingInputFormatter,
       @Nullable ObservationRegistry observationRegistry) {
     super(chatClient, RoutingResponse.class, observationRegistry);
-    this.routingInputFormatter = Objects.requireNonNullElse(routingInputFormatter,
+    this.routingInputFormatter = Objects.requireNonNullElse(
+        routingInputFormatter,
         defaultRoutingInputFormatter);
   }
 

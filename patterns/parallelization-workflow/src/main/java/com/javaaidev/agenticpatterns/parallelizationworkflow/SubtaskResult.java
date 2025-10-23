@@ -8,7 +8,8 @@ import org.jspecify.annotations.Nullable;
  * @param result Successful result
  * @param error  Error
  */
-public record SubtaskResult(@Nullable Object result, @Nullable Throwable error) {
+public record SubtaskResult(@Nullable Object result,
+                            @Nullable Throwable error) {
 
   /**
    * Has successful result

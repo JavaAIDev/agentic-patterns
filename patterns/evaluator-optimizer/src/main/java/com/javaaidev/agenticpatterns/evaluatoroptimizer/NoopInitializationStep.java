@@ -7,7 +7,8 @@ import org.jspecify.annotations.Nullable;
  *
  * @param <Request>
  */
-public class NoopInitializationStep<Request> implements InitializationStep<Request, Request> {
+public class NoopInitializationStep<Request> implements
+    InitializationStep<Request, Request> {
 
   @Override
   @Nullable

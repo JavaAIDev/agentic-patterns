@@ -11,7 +11,8 @@ public class RestAPITestCaseGenerationController {
 
   private final RestAPITestCaseGenerationAgent agent;
 
-  public RestAPITestCaseGenerationController(RestAPITestCaseGenerationAgent agent) {
+  public RestAPITestCaseGenerationController(
+      RestAPITestCaseGenerationAgent agent) {
     this.agent = agent;
   }
 

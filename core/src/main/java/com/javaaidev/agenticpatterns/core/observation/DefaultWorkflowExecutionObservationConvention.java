@@ -17,12 +17,14 @@ public class DefaultWorkflowExecutionObservationConvention implements
   }
 
   @Override
-  public KeyValues getLowCardinalityKeyValues(WorkflowExecutionObservationContext context) {
+  public KeyValues getLowCardinalityKeyValues(
+      WorkflowExecutionObservationContext context) {
     return KeyValues.of(workflowName(context));
   }
 
   @Override
-  public KeyValues getHighCardinalityKeyValues(WorkflowExecutionObservationContext context) {
+  public KeyValues getHighCardinalityKeyValues(
+      WorkflowExecutionObservationContext context) {
     return KeyValues.of(
         workflowExecutionInput(context),
         workflowExecutionOutput(context)
@@ -35,17 +37,21 @@ public class DefaultWorkflowExecutionObservationConvention implements
     );
   }
 
-  private KeyValue workflowExecutionInput(WorkflowExecutionObservationContext context) {
+  private KeyValue workflowExecutionInput(
+      WorkflowExecutionObservationContext context) {
     return KeyValue.of(
         HighCardinalityKeyNames.WORKFLOW_EXECUTION_INPUT,
-        context.getCarrier() != null ? AgentUtils.toJson(context.getCarrier()) : KeyValue.NONE_VALUE
+        context.getCarrier() != null ? AgentUtils.toJson(context.getCarrier())
+            : KeyValue.NONE_VALUE
     );
   }
 
-  private KeyValue workflowExecutionOutput(WorkflowExecutionObservationContext context) {
+  private KeyValue workflowExecutionOutput(
+      WorkflowExecutionObservationContext context) {
     return KeyValue.of(
         HighCardinalityKeyNames.WORKFLOW_EXECUTION_OUTPUT,
-        context.getResponse() != null ? AgentUtils.toJson(context.getResponse())
+        context.getResponse() != null ? AgentUtils.toJson(
+            context.getResponse())
             : KeyValue.NONE_VALUE
     );
   }

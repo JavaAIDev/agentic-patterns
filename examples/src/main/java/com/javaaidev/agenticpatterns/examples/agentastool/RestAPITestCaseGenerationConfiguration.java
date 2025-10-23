@@ -1,7 +1,6 @@
 package com.javaaidev.agenticpatterns.examples.agentastool;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,9 +9,8 @@ public class RestAPITestCaseGenerationConfiguration {
 
   @Bean
   public RestAPITestCaseGenerationAgent restAPITestCaseGenerationAgent(
-      ChatClient.Builder chatClientBuilder,
-      SimpleLoggerAdvisor simpleLoggerAdvisor) {
+      ChatClient.Builder chatClientBuilder) {
     return new RestAPITestCaseGenerationAgent(
-        chatClientBuilder.defaultAdvisors(simpleLoggerAdvisor).build());
+        chatClientBuilder.build());
   }
 }

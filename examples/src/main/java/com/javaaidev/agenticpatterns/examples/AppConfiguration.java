@@ -1,8 +1,8 @@
 package com.javaaidev.agenticpatterns.examples;
 
+import com.javaaidev.agenticpatterns.core.observation.ChatModelCompletionContentObservationFilter;
 import java.net.http.HttpClient;
 import java.time.Duration;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -18,7 +18,8 @@ public class AppConfiguration {
 
   @Bean
   public RestClient.Builder restClientBuilder(HttpClient httpClient) {
-    JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+    JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(
+        httpClient);
     requestFactory.setReadTimeout(API_TIMEOUT);
     return RestClient.builder().requestFactory(requestFactory);
   }
@@ -41,7 +42,7 @@ public class AppConfiguration {
   }
 
   @Bean
-  public SimpleLoggerAdvisor simpleLoggerAdvisor() {
-    return new SimpleLoggerAdvisor();
+  public ChatModelCompletionContentObservationFilter chatModelCompletionContentObservationFilter() {
+    return new ChatModelCompletionContentObservationFilter();
   }
 }
