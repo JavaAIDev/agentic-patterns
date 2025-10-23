@@ -7,12 +7,17 @@ spring:
       api-key: ${OPENAI_API_KEY:}
       chat:
         options:
-          model: gpt-4o
+          model: gpt-4.1-mini
           temperature: 0.0
 logging:
   level:
-    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: INFO
 management:
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        url: http://localhost:4318/v1/metrics
   tracing:
     sampling:
       probability: 1.0
