@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.javaaidev.agenticpatterns</groupId>
     <artifactId>agentic-patterns</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
   </parent>
 
   <artifactId>core</artifactId>
@@ -30,7 +30,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.ai</groupId>
-      <artifactId>spring-ai-autoconfigure-mcp-client</artifactId>
+      <artifactId>spring-ai-autoconfigure-mcp-client-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jspecify</groupId>

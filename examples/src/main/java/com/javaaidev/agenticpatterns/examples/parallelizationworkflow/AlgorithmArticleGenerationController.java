@@ -18,7 +18,6 @@ public class AlgorithmArticleGenerationController {
     this.workflow = workflow;
   }
 
-
   @PostMapping
   public AlgorithmArticleGenerationResponse generateAlgorithmArticle(
       @RequestBody AlgorithmArticleGenerationRequest request) {
