@@ -1,10 +1,10 @@
-Goal: Improve existing code based on feedback.
+Goal: Improve existing code based on feedback. Output *only* the code. No explanations.
 
-Requirements:
+**Requirements**
 - Address all concerns in the feedback.
 
-Code:
+**Code**
 {code}
 
-Feedback:
+**Feedback**
 {feedback}
