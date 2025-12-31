@@ -8,7 +8,7 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import java.util.Map;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.mcp.client.autoconfigure.properties.McpStdioClientProperties.Parameters;
+import org.springframework.ai.mcp.client.common.autoconfigure.properties.McpStdioClientProperties.Parameters;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +45,7 @@ public class UserGenerationConfiguration {
                         Map.of()
                     )
                 )
-            ),
-            null
+            )
         ))
         .build();
   }

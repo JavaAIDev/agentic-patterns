@@ -13,18 +13,19 @@ import io.micrometer.observation.ObservationRegistry;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
-import io.modelcontextprotocol.client.transport.ServerParameters;
+import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
+import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,8 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
-import org.springframework.ai.mcp.client.autoconfigure.NamedClientMcpTransport;
-import org.springframework.ai.mcp.client.autoconfigure.properties.McpSseClientProperties.SseParameters;
+import org.springframework.ai.mcp.client.common.autoconfigure.NamedClientMcpTransport;
 import org.springframework.ai.tool.StaticToolCallbackProvider;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.core.ParameterizedTypeReference;
@@ -234,24 +234,40 @@ public abstract class TaskExecutionAgent<Request, Response> extends
     List<NamedClientMcpTransport> transports = new ArrayList<>();
     var stdioProperties = mcpClientConfiguration.stdioClientProperties();
     if (stdioProperties != null) {
-      for (Map.Entry<String, ServerParameters> serverParameters : stdioProperties.toServerParameters()
+      for (var serverParameters : stdioProperties.toServerParameters()
           .entrySet()) {
-        var transport = new StdioClientTransport(serverParameters.getValue());
+        var transport = new StdioClientTransport(serverParameters.getValue(),
+            new JacksonMcpJsonMapper(objectMapper));
         transports.add(new NamedClientMcpTransport(serverParameters.getKey(),
             transport));
       }
     }
+
     var sseProperties = mcpClientConfiguration.sseClientProperties();
     if (sseProperties != null) {
-      for (Map.Entry<String, SseParameters> serverParameters : sseProperties.connections()
+      for (var serverParameters : sseProperties.connections()
           .entrySet()) {
         String baseUrl = serverParameters.getValue().url();
-        String sseEndpoint = serverParameters.getValue().sseEndpoint() != null
-            ? serverParameters.getValue().sseEndpoint() : "/sse";
+        String sseEndpoint = Objects.requireNonNullElse(serverParameters.getValue().sseEndpoint(),
+            "/sse");
         var transport = HttpClientSseClientTransport.builder(baseUrl)
             .sseEndpoint(sseEndpoint)
-            .clientBuilder(HttpClient.newBuilder())
-            .objectMapper(objectMapper)
+            .jsonMapper(new JacksonMcpJsonMapper(objectMapper))
+            .build();
+        transports.add(new NamedClientMcpTransport(serverParameters.getKey(), transport));
+      }
+    }
+
+    var streamableHttpProperties = mcpClientConfiguration.streamableHttpClientProperties();
+    if (streamableHttpProperties != null) {
+      for (var serverParameters : streamableHttpProperties.connections()
+          .entrySet()) {
+        String baseUrl = serverParameters.getValue().url();
+        String endpoint = Objects.requireNonNullElse(serverParameters.getValue().endpoint(),
+            "/mcp");
+        var transport = HttpClientStreamableHttpTransport.builder(baseUrl)
+            .endpoint(endpoint)
+            .jsonMapper(new JacksonMcpJsonMapper(objectMapper))
             .build();
         transports.add(new NamedClientMcpTransport(serverParameters.getKey(), transport));
       }
