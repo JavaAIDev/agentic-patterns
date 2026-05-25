@@ -18,7 +18,7 @@ public class DefaultTaskExecutionAgentBuilder<Request, Response> extends
         toolFilter,
         name,
         observationRegistry,
-        objectMapper) {
+        jsonMapper) {
     };
   }
 }

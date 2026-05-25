@@ -1,9 +1,5 @@
 package com.javaaidev.agenticpatterns.core;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -12,11 +8,17 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 public class AgentUtils {
 
-  private static final ObjectMapper objectMapper = new ObjectMapper().enable(
-      SerializationFeature.INDENT_OUTPUT);
+  private static final ObjectMapper objectMapper = JsonMapper.builder()
+      .enable(SerializationFeature.INDENT_OUTPUT)
+      .build();
 
   /**
    * Load prompt template from classpath by name
@@ -68,7 +70,7 @@ public class AgentUtils {
     }
     try {
       return objectMapper.writeValueAsString(input);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       return "{}";
     }
   }
@@ -87,7 +89,7 @@ public class AgentUtils {
     try {
       return objectMapper.readValue(json, new TypeReference<>() {
       });
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       return new HashMap<>();
     }
   }

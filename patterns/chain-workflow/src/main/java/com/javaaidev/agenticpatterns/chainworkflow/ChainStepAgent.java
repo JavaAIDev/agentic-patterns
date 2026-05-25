@@ -1,6 +1,5 @@
 package com.javaaidev.agenticpatterns.chainworkflow;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaaidev.agenticpatterns.core.McpClientConfiguration;
 import com.javaaidev.agenticpatterns.taskexecution.AbstractTaskExecutionAgentBuilder;
 import com.javaaidev.agenticpatterns.taskexecution.TaskExecutionAgent;
@@ -14,6 +13,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.util.Assert;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * A step in the chain implemented as a {@linkplain TaskExecutionAgent}
@@ -44,11 +44,11 @@ public abstract class ChainStepAgent<Request, Response> extends
       @Nullable Predicate<String> toolFilter,
       @Nullable String name,
       @Nullable ObservationRegistry observationRegistry,
-      @Nullable ObjectMapper objectMapper) {
+      @Nullable JsonMapper jsonMapper) {
     super(chatClient, promptTemplate, responseType,
         promptTemplateContextProvider,
         chatClientRequestSpecUpdater, mcpClientConfiguration, toolFilter,
-        name, observationRegistry, objectMapper);
+        name, observationRegistry, jsonMapper);
   }
 
   public static <Req, Res> Builder<Req, Res> builder() {
@@ -86,7 +86,7 @@ public abstract class ChainStepAgent<Request, Response> extends
           toolFilter,
           name,
           observationRegistry,
-          objectMapper) {
+          jsonMapper) {
         @Override
         public Response call(Request request, Map<String, Object> context,
             WorkflowChain<Request, Response> chain) {

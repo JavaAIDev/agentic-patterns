@@ -1,6 +1,5 @@
 package com.javaaidev.agenticpatterns.taskexecution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaaidev.agenticpatterns.core.Agent;
 import com.javaaidev.agenticpatterns.core.AgentExecutionException;
 import com.javaaidev.agenticpatterns.core.AgentUtils;
@@ -15,7 +14,7 @@ import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
-import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -41,6 +40,7 @@ import org.springframework.ai.tool.StaticToolCallbackProvider;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.CollectionUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Task Execution Agent, refer to the <a
@@ -63,7 +63,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
   protected McpClientConfiguration mcpClientConfiguration;
   protected Predicate<String> toolFilter = (name) -> true;
   protected String name = super.getName();
-  protected ObjectMapper objectMapper = new ObjectMapper();
+  protected JsonMapper jsonMapper = JsonMapper.builder().build();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutionAgent.class);
 
@@ -99,7 +99,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
       @Nullable Predicate<String> toolFilter,
       @Nullable String name,
       @Nullable ObservationRegistry observationRegistry,
-      @Nullable ObjectMapper objectMapper
+      @Nullable JsonMapper jsonMapper
   ) {
     super(chatClient, observationRegistry);
     this.promptTemplate = promptTemplate;
@@ -113,8 +113,8 @@ public abstract class TaskExecutionAgent<Request, Response> extends
     if (name != null) {
       this.name = name;
     }
-    if (objectMapper != null) {
-      this.objectMapper = objectMapper;
+    if (jsonMapper != null) {
+      this.jsonMapper = jsonMapper;
     }
   }
 
@@ -237,7 +237,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
       for (var serverParameters : stdioProperties.toServerParameters()
           .entrySet()) {
         var transport = new StdioClientTransport(serverParameters.getValue(),
-            new JacksonMcpJsonMapper(objectMapper));
+            new JacksonMcpJsonMapper(jsonMapper));
         transports.add(new NamedClientMcpTransport(serverParameters.getKey(),
             transport));
       }
@@ -252,7 +252,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
             "/sse");
         var transport = HttpClientSseClientTransport.builder(baseUrl)
             .sseEndpoint(sseEndpoint)
-            .jsonMapper(new JacksonMcpJsonMapper(objectMapper))
+            .jsonMapper(new JacksonMcpJsonMapper(jsonMapper))
             .build();
         transports.add(new NamedClientMcpTransport(serverParameters.getKey(), transport));
       }
@@ -267,7 +267,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
             "/mcp");
         var transport = HttpClientStreamableHttpTransport.builder(baseUrl)
             .endpoint(endpoint)
-            .jsonMapper(new JacksonMcpJsonMapper(objectMapper))
+            .jsonMapper(new JacksonMcpJsonMapper(jsonMapper))
             .build();
         transports.add(new NamedClientMcpTransport(serverParameters.getKey(), transport));
       }
@@ -320,7 +320,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
 
     T toolFilter(Predicate<String> toolFilter);
 
-    T objectMapper(ObjectMapper objectMapper);
+    T jsonMapper(JsonMapper jsonMapper);
 
     TaskExecutionAgent<Request, Response> build();
   }

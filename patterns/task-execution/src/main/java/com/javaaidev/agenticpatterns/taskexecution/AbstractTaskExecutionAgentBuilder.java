@@ -1,6 +1,5 @@
 package com.javaaidev.agenticpatterns.taskexecution;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaaidev.agenticpatterns.core.McpClientConfiguration;
 import io.micrometer.observation.ObservationRegistry;
 import java.lang.reflect.Type;
@@ -12,6 +11,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
 import org.springframework.util.Assert;
+import tools.jackson.databind.json.JsonMapper;
 
 public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T extends AbstractTaskExecutionAgentBuilder<Request, Response, T>> implements
     TaskExecutionAgent.Builder<Request, Response, T> {
@@ -25,7 +25,7 @@ public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T ext
   protected @Nullable Consumer<ChatClientRequestSpec> chatClientRequestSpecUpdater;
   protected @Nullable McpClientConfiguration mcpClientConfiguration;
   protected @Nullable Predicate<String> toolFilter;
-  protected @Nullable ObjectMapper objectMapper;
+  protected @Nullable JsonMapper jsonMapper;
 
   @SuppressWarnings("unchecked")
   protected T self() {
@@ -85,8 +85,8 @@ public abstract class AbstractTaskExecutionAgentBuilder<Request, Response, T ext
   }
 
   @Override
-  public T objectMapper(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
+  public T jsonMapper(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
     return self();
   }
 }

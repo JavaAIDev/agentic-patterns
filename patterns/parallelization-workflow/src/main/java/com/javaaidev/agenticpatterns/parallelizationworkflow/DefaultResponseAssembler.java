@@ -1,6 +1,5 @@
 package com.javaaidev.agenticpatterns.parallelizationworkflow;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaaidev.agenticpatterns.core.McpClientConfiguration;
 import com.javaaidev.agenticpatterns.parallelizationworkflow.DefaultResponseAssembler.AssemblingInput;
 import com.javaaidev.agenticpatterns.taskexecution.AbstractTaskExecutionAgentBuilder;
@@ -14,6 +13,7 @@ import java.util.function.Predicate;
 import org.jspecify.annotations.Nullable;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClient.ChatClientRequestSpec;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * A {@linkplain ResponseAssembler} implemented using {@linkplain TaskExecutionAgent}
@@ -33,11 +33,11 @@ public class DefaultResponseAssembler<Request, Response> extends
       @Nullable Predicate<String> toolFilter,
       @Nullable String name,
       @Nullable ObservationRegistry observationRegistry,
-      @Nullable ObjectMapper objectMapper) {
+      @Nullable JsonMapper jsonMapper) {
     super(chatClient, promptTemplate, responseType,
         promptTemplateContextProvider,
         chatClientRequestSpecUpdater, mcpClientConfiguration, toolFilter,
-        name, observationRegistry, objectMapper);
+        name, observationRegistry, jsonMapper);
   }
 
   @Override
@@ -68,7 +68,7 @@ public class DefaultResponseAssembler<Request, Response> extends
           toolFilter,
           name,
           observationRegistry,
-          objectMapper
+          jsonMapper
       );
     }
   }

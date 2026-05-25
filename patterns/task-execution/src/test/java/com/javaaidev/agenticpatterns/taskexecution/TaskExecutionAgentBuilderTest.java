@@ -8,17 +8,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.openai.api.OpenAiApi;
 
 @Disabled
 class TaskExecutionAgentBuilderTest {
 
   private final ChatClient chatClient = ChatClient.builder(
-      OpenAiChatModel.builder()
-          .openAiApi(OpenAiApi.builder()
-              .apiKey(System.getenv("OPENAI_API_KEY"))
-              .build())
-          .build()).build();
+      OpenAiChatModel.builder().build()).build();
 
   @Test
   void testBuilder() {
