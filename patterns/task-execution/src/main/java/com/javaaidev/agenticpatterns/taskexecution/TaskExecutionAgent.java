@@ -207,8 +207,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
     LOGGER.info("Tool names to use: {}", toolNames);
     var requestSpec = chatClient.prompt()
         .user(userSpec -> userSpec.text(template).params(context))
-        .toolCallbacks(getToolCallbackProvider())
-        .toolNames(toolNames);
+        .tools(getToolCallbackProvider());
     updateChatClientRequest(requestSpec);
     var responseSpec = requestSpec.call();
     Response output;
@@ -277,10 +276,10 @@ public abstract class TaskExecutionAgent<Request, Response> extends
     if (!CollectionUtils.isEmpty(transports)) {
       for (NamedClientMcpTransport namedTransport : transports) {
 
-        McpSchema.Implementation clientInfo = new McpSchema.Implementation(
-            namedTransport.name(), "1.0.0");
+        var clientInfo = McpSchema.Implementation.builder(
+            namedTransport.name(), "1.0.0").build();
 
-        McpClient.AsyncSpec spec = McpClient.async(namedTransport.transport())
+        var spec = McpClient.async(namedTransport.transport())
             .clientInfo(clientInfo)
             .requestTimeout(Duration.ofSeconds(30));
 
@@ -289,7 +288,7 @@ public abstract class TaskExecutionAgent<Request, Response> extends
 
         mcpAsyncClients.add(client);
       }
-      return new AsyncMcpToolCallbackProvider(mcpAsyncClients);
+      return AsyncMcpToolCallbackProvider.builder().mcpClients(mcpAsyncClients).build();
     }
     return new StaticToolCallbackProvider();
   }
